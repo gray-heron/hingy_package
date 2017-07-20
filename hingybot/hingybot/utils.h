@@ -12,3 +12,4 @@ bool load_params_from_xml(std::string filename, std::string main_node,
 	stringmap& out);
 
 bool file_exists(std::string name);
+size_t file_size(std::string name);

@@ -94,3 +94,8 @@ bool load_params_from_xml(string filename, string main_node_name,
 bool file_exists(string name) {
 	return std::experimental::filesystem::exists(name);
 }
+
+size_t file_size(std::string name)
+{
+	return std::experimental::filesystem::file_size(name);
+}

@@ -9,6 +9,8 @@ class SimIntegration {
 public:
 	virtual CarState Begin(stringmap driver_params) = 0;
 	virtual void Cycle(CarSteers&, CarState&) = 0;
+
+	virtual ~SimIntegration() {};
 };
 
 class TorcsIntegration : public SimIntegration {
@@ -31,4 +33,5 @@ public:
 	virtual CarState Begin(stringmap driver_params);
 
 	TorcsIntegration(stringmap params);
+	virtual ~TorcsIntegration();
 };

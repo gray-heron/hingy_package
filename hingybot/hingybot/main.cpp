@@ -15,6 +15,14 @@ const std::vector<string> launch_arguments = {
 	"host", "port", "stage", "gui", "track", "params"
 };
 
+const std::vector<std::pair<string, string>> default_params = {
+	{"track", "tmp_track.xml"},
+	{ "gui", "0" },
+	{ "stage", "1" },
+	{ "force1", "0" }, { "force2", "0" },
+	{ "hinges_iterations", "60000"}
+};
+
 int main(int argc, char ** argv)
 {
 	int cycles = 0;
@@ -24,6 +32,10 @@ int main(int argc, char ** argv)
 	if (launch_params.find("params") == launch_params.end() || 
 		!load_params_from_xml(launch_params["params"], "hingybot_params", launch_params))
 		log_warning("Parameters couldn't be read from the xml!");
+
+	for (auto& param : default_params)
+		if (launch_params.find(param.first) == launch_params.end())
+			launch_params[param.first] = param.second;
 
 	auto driver = std::make_unique<HingyDriver>(launch_params);
 

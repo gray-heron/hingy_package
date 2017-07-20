@@ -4,14 +4,6 @@
 #include "torcs_integration.h"
 #include "main.h"
 
-#if defined  _WIN64 || defined  WIN32
-#include <WinSock.h>
-#else
-#include <netinet/in.h>
-#include <unistd.h>
-#endif
-
-
 using std::string;
 
 const std::unordered_map<string, std::pair<size_t, int>> car_state_offset_table = {
@@ -185,4 +177,10 @@ void TorcsIntegration::Cycle(CarSteers& steers, CarState& state)
 		PreparePacketOut(out);
 		SDLNet_UDP_Send(socket, -1, &packet_out);
 	}
+}
+
+TorcsIntegration::~TorcsIntegration()
+{
+	SDLNet_FreeSocketSet(socket_set);
+	SDLNet_UDP_Close(socket);
 }
