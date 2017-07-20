@@ -18,6 +18,7 @@ const std::unordered_map<string, std::pair<size_t, int>> car_state_offset_table 
 	{ "trackPos",		{ offsetof(CarState, cross_position),		1  } },
 	{ "wheelSpinVel",	{ offsetof(CarState, wheels_speeds),		4  } },
 	{ "z",				{ offsetof(CarState, height),				1  } },
+	{ "clutch",			{ offsetof(CarState, clutch),				1  } },
 };
 
 TorcsIntegration::TorcsIntegration(stringmap params)
@@ -164,6 +165,7 @@ void TorcsIntegration::Cycle(CarSteers& steers, CarState& state)
 	out += "(brake " + std::to_string(steers.hand_brake) + ")";
 	out += "(gear " + std::to_string(steers.gear) + ")";
 	out += "(clutch " + std::to_string(steers.clutch) + ")";
+	out += "(steer " + std::to_string(steers.steering_wheel) + ")";
 	//out += "(focus " + std::to_string(steers.focus) + ")";
 	//out += "(meta " + std::to_string(steers.gas) + ")";
 

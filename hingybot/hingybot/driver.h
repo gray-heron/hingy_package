@@ -5,13 +5,14 @@
 #include "main.h"
 #include "car_io.h"
 #include "hingy_track.h"
+#include "pid_controller.h"
 
 class Driver {
 public:
 	Driver(stringmap params) {};
 	virtual ~Driver() {};
 
-	virtual CarSteers Cycle(const CarState&) = 0;
+	virtual void Cycle(CarSteers& steers, const CarState& state) = 0;
 	virtual stringmap GetSimulatorInitParameters() = 0;
 };
 
@@ -21,11 +22,17 @@ private:
 	float last_timestamp = 0.0f;
 	float last_dt = 0.0f;
 
+	PidController cross_position_control;
+	PidController angle_control;
+	PidController speed_control;
+
+	void SetClutchAndGear(const CarState& state, CarSteers& steers);
+
 public:
 	HingyDriver(stringmap params);
 	virtual ~HingyDriver();
 
-	virtual CarSteers Cycle(const CarState&);
+	virtual void Cycle(CarSteers& steers, const CarState& state);
 	virtual stringmap GetSimulatorInitParameters();
 
 	

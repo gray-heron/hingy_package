@@ -2,13 +2,18 @@
 
 using std::string;
 
+
 HingyDriver::HingyDriver(stringmap params) : Driver(params)
 {
-	bool gui = atoi(params["gui"].c_str());
-	bool record = atoi(params["stage"].c_str()) == 0;
+	bool gui = std::stoi(params["gui"]);
+	bool record = std::stoi(params["stage"]) == 0;
 
-	float force1 = atof(params["force1"].c_str());
-	float force2 = atof(params["force2"].c_str());
+	float force1 = std::stof(params["force1"]);
+	float force2 = std::stof(params["force2"]);
+
+	float sa = std::stof(params["sa"]);
+	float sb = std::stof(params["sb"]);
+	float sc = std::stof(params["sc"]);
 
 	int hinges_iterations = atoi(params["hinges_iterations"].c_str());
 
@@ -29,31 +34,44 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
 			}
 
 			track->CacheHinges();
+
 		} else {
 			track->LoadHingesFromCache();
 		}
+
+		track->ConstructSpeeds(sa, sb, sc);
+		if (gui)
+			std::static_pointer_cast<HingyTrackGui>(track)->TickGraphics();
 	} else {
 		track->BeginRecording();
 	}
+
+	cross_position_control = PidController(-0.34f, -0.0f, 0.0f, 1.0f);
+	angle_control = PidController(-2.7f, -0.0f, 0.0f, 1.0f);
 }
 
-HingyDriver::~HingyDriver()
+void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
 {
-}
-
-CarSteers HingyDriver::Cycle(const CarState& state)
-{
-	CarSteers out;
-
 	float dt = state.current_lap_time - last_timestamp;
 	if (dt < 0.0)
 		dt = last_dt;
 	last_dt = dt;
 	last_timestamp = state.current_lap_time;
 
-	out.gear = 1;
-	out.gas = std::max(0.0f, -state.speed_x + 30.0f);
-	out.hand_brake = std::max(0.0f, state.speed_x - 30.0f);
+	if (state.speed_x < 20.0f) {
+		cross_position_control.AntiWindup();
+		angle_control.AntiWindup();
+	}
+
+	auto hinge_data = track->GetHingePosAndHeading();
+
+	float master_out = cross_position_control.Update(hinge_data.first,
+		-state.cross_position, dt);
+
+	steers.steering_wheel = angle_control.Update(
+		hinge_data.second - 1.0f * master_out,
+		1.0f * state.angle, dt
+	);
 
 	track->MarkWaypoint(
 		state.absolute_odometer,
@@ -62,8 +80,24 @@ CarSteers HingyDriver::Cycle(const CarState& state)
 		(state.wheels_speeds[0] - state.wheels_speeds[1]) * -dt,
 		state.speed_x);
 
-	return out;
+	steers.gas = 0.6f;
+	
+	SetClutchAndGear(state, steers);
 }
+
+void HingyDriver::SetClutchAndGear(const CarState & state, CarSteers & steers)
+{
+	if (state.rpm > 7500.0f)
+		steers.clutch = 1.0f;
+
+	if (state.clutch == 1.0f) {
+		steers.gas = 0.0f;
+		steers.gear += 1;
+	}
+
+	steers.clutch = std::max(0.0f, state.clutch - 0.1f);
+}
+
 
 stringmap HingyDriver::GetSimulatorInitParameters()
 {
@@ -77,4 +111,8 @@ stringmap HingyDriver::GetSimulatorInitParameters()
 	params["ds3"] = "15"; params["ds2"] = "10"; params["ds1"] = "5";
 
 	return params;
+}
+
+HingyDriver::~HingyDriver()
+{
 }

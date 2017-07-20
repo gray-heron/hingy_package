@@ -20,7 +20,7 @@ const std::vector<std::pair<string, string>> default_params = {
 	{ "gui", "0" },
 	{ "stage", "1" },
 	{ "force1", "0" }, { "force2", "0" },
-	{ "hinges_iterations", "60000"}
+	{ "hinges_iterations", "60000"},
 };
 
 int main(int argc, char ** argv)
@@ -44,13 +44,15 @@ int main(int argc, char ** argv)
 
 	log_info("Waiting for the simulator hookup...");
 	auto car_state = integration->Begin(driver->GetSimulatorInitParameters());
+	CarSteers car_steers;
 	log_info("Starting the main loop!");
 
 	auto block_start_time = high_resolution_clock::now();
 
 	while (true) {
-		auto car_steers = driver->Cycle(car_state);
+		driver->Cycle(car_steers, car_state);
 		integration->Cycle(car_steers, car_state);
+		car_state.clutch = car_steers.clutch;
 
 		auto time = std::chrono::high_resolution_clock::now();
 		auto ms = std::chrono::duration_cast<std::chrono::milliseconds>

@@ -86,9 +86,11 @@ bool load_params_from_xml(string filename, string main_node_name,
 
 			out[param_name] = param_node->value();
 		}
+
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 bool file_exists(string name) {
