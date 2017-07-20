@@ -4,6 +4,14 @@
 #include "torcs_integration.h"
 #include "main.h"
 
+#if defined  _WIN64 || defined  WIN32
+#include <WinSock.h>
+#else
+#include <netinet/in.h>
+#include <unistd.h>
+#endif
+
+
 using std::string;
 
 const std::unordered_map<string, std::pair<size_t, int>> car_state_offset_table = {
@@ -102,12 +110,15 @@ CarState TorcsIntegration::Begin(stringmap params)
 	CarState out;
 	packet_out.address = simulator_address;
 
+	socket_set = SDLNet_AllocSocketSet(1);
+
 	socket = SDLNet_UDP_Open(0);
 	if (!socket) {
 		log_error(string("UDP socket couldn't be opened, error: ") +
 			SDLNet_GetError());
 		throw;
 	}
+	SDLNet_UDP_AddSocket(socket_set, socket);
 
 	string init_string = "SCR(init", instring;
 	for (int i = -9; i <= 9; i++) {
@@ -151,7 +162,27 @@ CarState TorcsIntegration::Begin(stringmap params)
 	return out;
 }
 
-void TorcsIntegration::Cycle(CarSteers&, CarState&)
+void TorcsIntegration::Cycle(CarSteers& steers, CarState& state)
 {
+	string out;
 
+	packet_in.len = 0;
+
+	out += "(accel " + std::to_string(steers.gas) + ")";
+	out += "(brake " + std::to_string(steers.hand_brake) + ")";
+	out += "(gear " + std::to_string(steers.gear) + ")";
+	out += "(clutch " + std::to_string(steers.clutch) + ")";
+	//out += "(focus " + std::to_string(steers.focus) + ")";
+	//out += "(meta " + std::to_string(steers.gas) + ")";
+
+	if (!SDLNet_UDP_Recv(socket, &packet_in))
+		SDLNet_CheckSockets(socket_set, -1);
+
+	while (SDLNet_UDP_Recv(socket, &packet_in));
+
+	if (packet_in.len) {
+		ParseCarState((char*)data_in.data(), state);
+		PreparePacketOut(out);
+		SDLNet_UDP_Send(socket, -1, &packet_out);
+	}
 }

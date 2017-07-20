@@ -13,6 +13,7 @@ public:
 
 class TorcsIntegration : public SimIntegration {
 	UDPsocket socket;
+	SDLNet_SocketSet socket_set;
 	IPaddress all;
 	IPaddress simulator_address = { 0, 3001 };
 

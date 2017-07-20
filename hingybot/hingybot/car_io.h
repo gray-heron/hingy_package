@@ -15,4 +15,5 @@ struct CarState {
 struct CarSteers {
 	float gas = 0.0f, hand_brake = 0.0f, steering_wheel = 0.0f;
 	int gear = 0;
+	float clutch = 0.0f, focus = 0.0f, meta = 0.0f;
 };

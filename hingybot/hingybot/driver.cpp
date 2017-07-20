@@ -4,9 +4,14 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
 {
 }
 
-CarSteers HingyDriver::Cycle(const CarState&)
+CarSteers HingyDriver::Cycle(const CarState& state)
 {
-	return CarSteers();
+	CarSteers out;
+	out.gear = 1.0f;
+	out.gas = std::max(0.0f, -state.speed_x + 30.0f);
+	out.hand_brake = std::max(0.0f, state.speed_x - 30.0f);
+
+	return out;
 }
 
 stringmap HingyDriver::GetSimulatorInitParameters()
