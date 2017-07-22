@@ -23,7 +23,7 @@ const std::unordered_map<string, std::pair<size_t, int>> car_state_offset_table 
 
 TorcsIntegration::TorcsIntegration(stringmap params)
 {
-	SDLNet_Init();
+ 	SDLNet_Init();
 
 	packet_in.data = data_in.data();
 	packet_out.data = data_out.data();
@@ -35,7 +35,7 @@ TorcsIntegration::TorcsIntegration(stringmap params)
 		port = std::stoi(params["port"]);
 
 	if (params.find("host") != params.end()) {
-		if (SDLNet_ResolveHost(&simulator_address, params["ip"].c_str(), port) == -1) {
+		if (SDLNet_ResolveHost(&simulator_address, params["host"].c_str(), port) == -1) {
 			log_error("Simulator address couldn't be resolved!");
 			throw;
 		}

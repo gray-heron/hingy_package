@@ -22,7 +22,7 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
 	else
 		track = std::make_shared<HingyTrack>(params["track"]);
 
-	if (!record) {
+	if (!record) {    
 		track->ConstructBounds();
 		track->ConstructHinges(13);
 

@@ -1,4 +1,6 @@
-#include <filesystem>
+
+#include <cstring>
+#include <fstream>
 
 #include "utils.h"
 
@@ -55,7 +57,7 @@ bool load_params_from_xml(string filename, string main_node_name,
 	stringmap& out)
 {
 	if (file_exists(filename)) {
-		int size = std::experimental::filesystem::file_size(filename);
+		int size = file_size(filename);
 		char* buf = new char[size + 1];
 		xml_document <> doc;
 		FILE *f = fopen(filename.c_str(), "rb");
@@ -94,10 +96,23 @@ bool load_params_from_xml(string filename, string main_node_name,
 }
 
 bool file_exists(string name) {
-	return std::experimental::filesystem::exists(name);
+	FILE * f = fopen(name.c_str(), "rb");
+	if (f) {
+		fclose(f);
+		return true;
+	}
+
+	return false;
 }
 
 size_t file_size(std::string name)
 {
-	return std::experimental::filesystem::file_size(name);
+	FILE * f = fopen(name.c_str(), "rb");
+	if (!f)
+		return 0;
+
+	fseek(f, 0, SEEK_END);
+	size_t out = ftell(f);
+	fclose(f);
+	return out;
 }

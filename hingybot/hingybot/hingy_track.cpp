@@ -1,6 +1,7 @@
 #include <fstream>
 #include <assert.h>
 #include <algorithm>
+#include <cfloat>
 
 #include "hingy_track.h"
 #include "utils.h"
@@ -259,11 +260,11 @@ void HingyTrack::SimulateHinges(float straightening_factor, float pulling_factor
 		auto dist_to_next = (Vector2D(next.x, next.y) - Vector2D(me.x, me.y)).Length();
 
 		forces[i] += Vector2D(straightening_factor * 2.0f, 0.0f) * (perpendicular_angle)*
-			std::abs(std::powf(angle_diff, 2.0f));
+			std::abs(std::pow(angle_diff, 2.0f));
 		forces[ip] += Vector2D(straightening_factor, 0.0f) * (perpendicular_angle.Inv()) *
-			std::abs(std::powf(angle_diff, 2.0f));
+			std::abs(std::pow(angle_diff, 2.0f));
 		forces[in] += Vector2D(straightening_factor, 0.0f) * (perpendicular_angle.Inv()) *
-			std::abs(std::powf(angle_diff, 2.0f));
+			std::abs(std::pow(angle_diff, 2.0f));
 
 		me.curve = std::abs(angle_diff);
 
@@ -274,8 +275,8 @@ void HingyTrack::SimulateHinges(float straightening_factor, float pulling_factor
 		forces[ip] += Vector2D(pulling_factor, 0.0f) * angle_from_prev;
 	}
 
-	hinges._Myfirst()->x = (hinges._Myfirst()->lx + hinges._Myfirst()->hx) / 2.0f;
-	hinges._Mylast()->x = (hinges._Mylast()->lx + hinges._Mylast()->hx) / 2.0f;
+	hinges.begin()->x = (hinges.begin()->lx + hinges.begin()->hx) / 2.0f;
+	(hinges.end() - 1)->x = ((hinges.end() - 1)->lx + (hinges.end() - 1)->hx) / 2.0f;
 
 	for (int i = 0; i < hinges.size(); i++) {
 		hinges[i].x += forces[i].x;
@@ -343,7 +344,7 @@ void HingyTrack::ConstructSpeeds(float s, float p, float c)
 		return;
 
 	for (auto i = hinges.rbegin(); i != hinges.rend(); i++) {
-		energy -= (s * std::powf(i->curve, 2.0f) + p) * i->curve - c;
+		energy -= (s * std::pow(i->curve, 2.0f) + p) * i->curve - c;
 
 		if (energy > 1.0f)
 			energy = 1.0f;

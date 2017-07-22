@@ -1,3 +1,5 @@
+
+
 #include "hingy_math.h"
 
 float sgn(float& a1) {
@@ -18,12 +20,12 @@ Vector2D Vector2D::operator*(Direction rhs)
 
 Direction Vector2D::ToDirection()
 {
-	return{ std::atan2f(y, x) };
+	return{ std::atan2(y, x) };
 }
 
 float Vector2D::Length()
 {
-	return std::sqrtf(x * x + y * y);
+	return std::sqrt(x * x + y * y);
 }
 
 float Direction::operator-(const Direction& rhs) const {
@@ -35,7 +37,7 @@ float Direction::operator-(const Direction& rhs) const {
 	a2 = PI * sgn(a2) - a2;
 	float opt2 = a1 - a2;
 
-	if (abs(opt1) < abs(opt2))
+	if (std::abs(opt1) < std::abs(opt2))
 		return opt1;
 	else
 		return opt2;
@@ -43,7 +45,7 @@ float Direction::operator-(const Direction& rhs) const {
 
 Direction Direction::operator+(float rhs) const
 {
-	return Direction{ std::fmodf((h + rhs + PI), 2.0f * PI) - PI };
+	return Direction{ std::fmod((h + rhs + PI), 2.0f * PI) - PI };
 }
 
 Direction Direction::operator+(Direction rhs)
@@ -53,6 +55,6 @@ Direction Direction::operator+(Direction rhs)
 
 Direction Direction::Inv()
 {
-	return Direction{ std::fmodf((h + 2.0f * PI), 2.0f * PI) - PI };
+	return Direction{ std::fmod((h + 2.0f * PI), 2.0f * PI) - PI };
 }
 

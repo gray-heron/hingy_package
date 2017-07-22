@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL2\SDL_net.h>
+#include <SDL2/SDL_net.h>
 
 #include "car_io.h"
 #include "main.h"

@@ -8,7 +8,7 @@ struct CarState {
 	float speed_x = 0.0f, speed_y = 0.0f, speed_z = 0.0f;
 	float height = 0.0f, clutch = 0.0f;
 
-	std::array<float, 4> wheels_speeds = { 0.0f, 0.0f, 0.0f, 0.0f };
+    std::array<float, 4> wheels_speeds = {{ 0.0f, 0.0f, 0.0f, 0.0f }};
 	std::array<float, 19> sensors;
 };
 

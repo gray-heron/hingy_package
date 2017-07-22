@@ -1,7 +1,7 @@
 
-
 #include <memory>
 #include <chrono>
+#include <limits.h>
 
 #include "driver.h"
 #include "torcs_integration.h"
@@ -20,15 +20,15 @@ const std::vector<std::pair<string, string>> default_params = {
 	{ "gui", "0" },
 	{ "stage", "1" },
 	{ "force1", "0" }, { "force2", "0" },
-	{ "hinges_iterations", "60000"},
+	{ "hinges_iterations", "30000"},
 };
 
 int main(int argc, char ** argv)
 {
 	int cycles = 0;
 	stringmap launch_params;
+	parse_arguments("", ':', argc - 1, &argv[1], launch_params);
 
-	parse_arguments("", ':', argc, argv, launch_params);
 	if (launch_params.find("params") == launch_params.end() || 
 		!load_params_from_xml(launch_params["params"], "hingybot_params", launch_params))
 		log_warning("Parameters couldn't be read from the xml!");
@@ -37,10 +37,10 @@ int main(int argc, char ** argv)
 		if (launch_params.find(param.first) == launch_params.end())
 			launch_params[param.first] = param.second;
 
-	auto driver = std::make_unique<HingyDriver>(launch_params);
+	auto driver = std::unique_ptr<HingyDriver>(new HingyDriver(launch_params));
 
 	std::unique_ptr<SimIntegration> integration
-		= std::make_unique<TorcsIntegration>(launch_params);
+	    = std::unique_ptr<TorcsIntegration>(new TorcsIntegration(launch_params));
 
 	log_info("Waiting for the simulator hookup...");
 	auto car_state = integration->Begin(driver->GetSimulatorInitParameters());
