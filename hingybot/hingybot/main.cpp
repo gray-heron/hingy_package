@@ -20,7 +20,7 @@ const std::vector<std::pair<string, string>> default_params = {
     { "gui", "0" },
     { "stage", "1" },
     { "force1", "0" }, { "force2", "0" },
-    { "hinges_iterations", "30000"},
+    { "hinges_iterations", "60000"},
 };
 
 int main(int argc, char ** argv)
@@ -52,7 +52,6 @@ int main(int argc, char ** argv)
     while (true) {
         driver->Cycle(car_steers, car_state);
         integration->Cycle(car_steers, car_state);
-        car_state.clutch = car_steers.clutch;
 
         auto time = std::chrono::high_resolution_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>

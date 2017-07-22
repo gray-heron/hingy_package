@@ -7,18 +7,18 @@
 using std::string;
 
 const std::unordered_map<string, std::pair<size_t, int>> car_state_offset_table = {
-    { "angle",            { offsetof(CarState, angle),                1  } },
-    { "curLapTime",        { offsetof(CarState, current_lap_time),        1  } },
-    { "distFromStart",    { offsetof(CarState, absolute_odometer),    1  } },
-    { "rpm",            { offsetof(CarState, rpm),                    1  } },
+    { "angle",             { offsetof(CarState, angle),                  1  } },
+    { "curLapTime",        { offsetof(CarState, current_lap_time),       1  } },
+    { "distFromStart",     { offsetof(CarState, absolute_odometer),      1  } },
+    { "rpm",               { offsetof(CarState, rpm),                    1  } },
     { "speedX",            { offsetof(CarState, speed_x),                1  } },
     { "speedY",            { offsetof(CarState, speed_y),                1  } },
     { "speedZ",            { offsetof(CarState, speed_z),                1  } },
-    { "track",            { offsetof(CarState, sensors),                19 } },
-    { "trackPos",        { offsetof(CarState, cross_position),        1  } },
-    { "wheelSpinVel",    { offsetof(CarState, wheels_speeds),        4  } },
-    { "z",                { offsetof(CarState, height),                1  } },
-    { "clutch",            { offsetof(CarState, clutch),                1  } },
+    { "track",             { offsetof(CarState, sensors),                19 } },
+    { "trackPos",          { offsetof(CarState, cross_position),         1  } },
+    { "wheelSpinVel",      { offsetof(CarState, wheels_speeds),          4  } },
+    { "z",                 { offsetof(CarState, height),                 1  } },
+    { "gear",              { offsetof(CarState, gear),                   1  } },
 };
 
 TorcsIntegration::TorcsIntegration(stringmap params)

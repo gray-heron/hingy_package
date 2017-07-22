@@ -62,7 +62,7 @@ HingyTrack::HingyTrack(string filename) : filename(filename)
 
         delete[] buf;
     }
-
+    printf("XD3");
     waypoints.reserve(1000000);
 }
 

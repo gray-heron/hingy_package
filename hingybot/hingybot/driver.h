@@ -19,8 +19,9 @@ public:
 class HingyDriver : public Driver {
 private:
     std::shared_ptr<HingyTrack> track;
-    float last_timestamp = 0.0f;
-    float last_dt = 0.0f;
+    float last_timestamp = 0.0f, speed_factor, speed_base;
+    float last_dt = 0.0f, last_rpm = 0.0f;
+    int gear_dir;
 
     PidController cross_position_control;
     PidController angle_control;
