@@ -26,6 +26,8 @@ namespace TORCSTester
             var mean_p = 0.0;
             float total_score = 0.0f;
 
+	    Console.WriteLine(test.cases.Count);
+
             Console.WriteLine("--------------------------");
             foreach (var result in results)
             {

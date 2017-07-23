@@ -1,0 +1,21 @@
+<Configuration>
+  <server_executable>torcs</server_executable>
+  <server_args></server_args>
+  <server_path>./</server_path>
+  <client_executable>../../hingybot/hingybot/hingybot</client_executable>
+  <client_args>gui:1 params:configs/default.xml</client_args>
+  <client_path>../../hingybot/hingybot/</client_path>
+  <server_config_file></server_config_file> 
+  <server_score_captureline>Sim Time:   # [s], Leader Laps:    2, Leader Distance:    7.646 [km]</server_score_captureline>
+  <server_confirmation_msg></server_confirmation_msg>
+
+  <cases>
+  <TestCase>
+    <name>Street</name>
+    <client_args>port:3001 track:tracks/street.xml</client_args>
+    <server_args>-r /home/cezar/hingy_package/TORCSTester/TORCSTester/race_confs/confs2/q1Steet.xml</server_args>
+    <ref1>0</ref1>
+  </TestCase>
+  </cases>
+      
+</Configuration>

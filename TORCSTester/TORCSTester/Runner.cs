@@ -35,6 +35,7 @@ namespace TORCSTester
             client_proc.StartInfo.WorkingDirectory = config.client_path;
             client_proc.StartInfo.UseShellExecute = false;
             client_proc.StartInfo.CreateNoWindow = true;
+            client_proc.StartInfo.RedirectStandardOutput = true;
             
             server_proc.Start();
             client_proc.Start();
