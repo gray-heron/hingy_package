@@ -19,7 +19,7 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
     speed_base = std::stof(params["speed_base"]);
     
     int hinges_iterations = atoi(params["hinges_iterations"].c_str());
-    printf("D1");
+
     if (gui) 
         track = std::make_shared<HingyTrackGui>(params["track"], 1000, 1000);
     else
@@ -30,11 +30,11 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
 	    log_error("Couldn't load the track!");
 	    throw;
 	}
-	
+
         track->ConstructBounds();
         track->ConstructHinges(13);
 
-        if (!file_exists((string)"tmp/" + params["track"] + ".hinges")) {
+        if (!track->LoadHingesFromCache()) {
             for (int i = 0; i < hinges_iterations; i++) {
                 track->SimulateHinges(force1, force2);
                 if (gui && i % 1000 == 0)
@@ -42,9 +42,6 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
             }
 
             track->CacheHinges();
-
-        } else {
-            track->LoadHingesFromCache();
         }
 
         track->ConstructSpeeds(sa, sb, sc);

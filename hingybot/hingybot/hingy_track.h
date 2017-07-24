@@ -51,6 +51,8 @@ protected:
 
     int current_hinge = 0;
 
+    std::string tmp_filename;
+
 public:
     virtual ~HingyTrack() {};
     HingyTrack(std::string filename);
@@ -69,7 +71,7 @@ public:
     virtual void ConstructSpeeds(float s, float p, float c);
 
     void CacheHinges();
-    void LoadHingesFromCache();
+    bool LoadHingesFromCache();
 };
 
 class HingyTrackGui : public HingyTrack {

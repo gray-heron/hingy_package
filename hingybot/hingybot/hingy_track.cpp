@@ -62,7 +62,11 @@ HingyTrack::HingyTrack(string filename) : filename(filename)
 
         delete[] buf;
     }
-    printf("XD3");
+
+    string tmp = filename;
+    std::replace( tmp.begin(), tmp.end(), '/', '_');
+    tmp_filename = (string)"tmp/" + tmp + (string)".hinges";
+    
     waypoints.reserve(1000000);
 }
 
@@ -111,7 +115,8 @@ void HingyTrack::StopRecording()
 
 void HingyTrack::CacheHinges()
 {
-    FILE * f = fopen(((string)"tmp/" + (string)filename + (string)".hinges").c_str(), "wb");
+    FILE * f = fopen(tmp_filename.c_str(), "wb");
+
     if (f) {
         assert(fwrite(hinges.data(), sizeof(Hinge), hinges.size(), f)
             == hinges.size());
@@ -119,11 +124,17 @@ void HingyTrack::CacheHinges()
     }
 }
 
-void HingyTrack::LoadHingesFromCache()
+bool HingyTrack::LoadHingesFromCache()
 {
-    FILE * f = fopen(((string)"tmp/" + (string)filename + (string)".hinges").c_str(), "rb");
-    assert(fread(hinges.data(), sizeof(Hinge), hinges.size(), f) == hinges.size());
-    fclose(f);
+    FILE * f = fopen(tmp_filename.c_str(), "rb");
+
+    if (f) {
+	assert(fread(hinges.data(), sizeof(Hinge), hinges.size(), f) == hinges.size());
+	fclose(f);
+	return true;
+    }
+
+    return false;
 }
 
 void HingyTrack::MarkWaypoint(float forward, float l, float r, float angle, float speed)
@@ -495,7 +506,7 @@ void HingyTrackGui::TickGraphics(bool clear)
         SDL_RenderClear(renderer);
     }
 
-    //DrawMiddle();
+    DrawMiddle();
     if (recording)
         DrawTrack();
     //DrawBounds();
