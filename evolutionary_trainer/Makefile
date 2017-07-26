@@ -9,3 +9,7 @@ build/%.o: evolutionary_trainer/%.cpp
 
 default: $(MODULES)
 	$(CC) -o evolutionary_trainer/trainer $(LIBS) $(MODULES)
+
+clean:
+	rm -r build
+	rm evolutionary_trainer/trainer

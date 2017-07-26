@@ -9,3 +9,7 @@ build/%.o: hingybot/%.cpp
 
 default: $(MODULES)
 	$(CC) -o hingybot/hingybot $(LIBS) $(MODULES)
+
+clean:
+	rm -r build
+	rm hingybot/hingybot
