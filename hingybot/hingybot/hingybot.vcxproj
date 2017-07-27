@@ -147,6 +147,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="hingy_math.cpp" />
     <ClCompile Include="hingy_track.cpp" />
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="main.cpp" />

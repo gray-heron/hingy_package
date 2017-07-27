@@ -1,0 +1,46 @@
+<Configuration>
+  <server_executable>C:\Program Files (x86)\torcs\wtorcs.exe</server_executable>
+  <server_args></server_args>
+  <server_path>C:\Program Files (x86)\torcs\</server_path>
+  <client_executable>../../hingybot/x64/Release/hingybot.exe</client_executable>
+  <client_args>gui:0 params:configs/default.xml hinges_iterations:10000</client_args>
+  <client_path>../../hingybot/hingybot/</client_path>
+  <server_config_file></server_config_file> 
+  <server_score_captureline>Sim Time:   # [s], Leader Laps:    2, Leader Distance:    7.646 [km]</server_score_captureline>
+  <server_confirmation_msg></server_confirmation_msg>
+
+  <cases>
+  <TestCase>
+    <name>Street</name>
+    <client_args>port:3001 track:tracks/street.xml</client_args>
+    <server_args>-r config/raceman/confs2/q1Steet.xml</server_args>
+    <ref1>0</ref1>
+  </TestCase>
+  <TestCase>
+    <name>Speed</name>
+    <client_args>port:3003 track:tracks/speed.xml</client_args>
+    <server_args>-r config/raceman/confs2/q3Speed.xml</server_args>
+    <ref1>0</ref1>
+  </TestCase>
+  <TestCase>
+    <name>Alpine</name>
+    <client_args>port:3004 track:tracks/alpine.xml</client_args>
+    <server_args>-r config/raceman/confs2/q4Alpine.xml</server_args>
+    <ref1>0</ref1>
+  </TestCase>
+<!--
+  <TestCase>
+    <name>Emero</name>
+    <client_args>port:3005 track:tracks/emero.xml</client_args>
+    <server_args>-r /home/cezar/hingy_package/TORCSTester/TORCSTester/race_confs/confs2/q5emero.xml</server_args>
+    <ref1>0</ref1>
+  </TestCase>
+  <TestCase>
+    <name>Schwang</name>
+    <client_args>port:3007 track:tracks/Schwang.xml</client_args>
+    <server_args>-r /home/cezar/hingy_package/TORCSTester/TORCSTester/race_confs/confs2/q1Schwang.xml</server_args>
+    <ref1>0</ref1>
+    </TestCase>
+    -->
+  </cases>
+</Configuration>
