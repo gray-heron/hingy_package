@@ -21,8 +21,16 @@ enum ParamsNames {
     ParamMutationChance = 0, MutationPower
 };
 
-static string tester_path = "hingybot\\TORCSTester\\TORCSTester\\";
-static string hingybot_path = "hingybot\\torcs_basic_bot\\torcs_basic_bot\\";
+const string tester_path = "../../TORCSTester/TORCSTester/";
+const string tester_executable = "bin/Debug/TORCSTester.exe";
+const string tester_profile = "cases/learn.xml";
+const string tester_options = " 3";
+
+const string hingybot_path = "../../hingybot/hingybot/";
+
+const string individual_being_evaluated = "params/current.xml";
+const string individual_best = "params/best.xml";
+const string individual_initial = "params/initial.xml";
 
 class ParamSeeker : public Trainable<float> {
 public:
@@ -111,7 +119,7 @@ public:
 std::string exec() {
     std::array<char, 128> buffer;
     std::string result;
-    std::shared_ptr<FILE> pipe(popen((tester_path + "bin\\Debug\\TORCSTester.exe " + tester_path + "\\bin\\Debug\\check.xml 4").c_str(), "r"), pclose);
+    std::shared_ptr<FILE> pipe(popen((tester_path + tester_executable + " " + tester_path + " " + tester_profile + " " + tester_options ).c_str(), "r"), pclose);
     if (!pipe) throw std::runtime_error("popen() failed!");
     while (!feof(pipe.get())) {
         if (fgets(buffer.data(), 128, pipe.get()) != NULL)
@@ -136,7 +144,7 @@ void WriteParams(std::vector<float>& params, string name) {
     main_node->append_node(doc.allocate_node(node_element, "sb",            tmp[1].c_str()));
     main_node->append_node(doc.allocate_node(node_element, "sc",            tmp[2].c_str()));
     main_node->append_node(doc.allocate_node(node_element, "speed_base",    tmp[3].c_str()));
-    main_node->append_node(doc.allocate_node(node_element, "speed_factor",    tmp[4].c_str()));
+    main_node->append_node(doc.allocate_node(node_element, "speed_factor",  tmp[4].c_str()));
 
     doc.append_node(main_node);
     fs << doc;
@@ -144,10 +152,10 @@ void WriteParams(std::vector<float>& params, string name) {
 }
 
 void ReadParams(std::vector<float>& params) {
-    int size = file_size(hingybot_path + "default.xml");
+    int size = file_size(hingybot_path + individual_initial);
     char* buf = new char[size + 1];
     xml_document <> doc;
-    FILE *f = fopen((hingybot_path + "default.xml").c_str(), "rb");
+    FILE *f = fopen((hingybot_path + individual_initial).c_str(), "rb");
 
     while (ftell(f) != size) {
         /* printf("%d\n", */fread(&buf[ftell(f)], size, 1, f);
@@ -191,7 +199,7 @@ float best = 0.0;
 float ParamsFitness(std::shared_ptr<Trainable<float>> seeker) {
     float fitness;
     auto tmp_seeker = std::dynamic_pointer_cast<ParamSeeker>(seeker);
-    WriteParams(tmp_seeker->end_params, "trained.xml");
+    WriteParams(tmp_seeker->end_params, individual_being_evaluated);
     string out = exec();
 
     vector<string> lines;
@@ -204,7 +212,7 @@ float ParamsFitness(std::shared_ptr<Trainable<float>> seeker) {
 
     if (-fitness > best) {
         best = -fitness;
-        WriteParams(tmp_seeker->end_params, "best.xml");
+        WriteParams(tmp_seeker->end_params, individual_best);
         printf("New best! %f\n", -fitness);
     }
 
