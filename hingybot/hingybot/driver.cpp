@@ -43,6 +43,7 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
 
             track->CacheHinges();
         }
+        track->SimulateHinges(force1, force2);
 
         track->ConstructSpeeds(sa, sb, sc);
         if (gui)
@@ -111,12 +112,12 @@ void HingyDriver::SetClutchAndGear(const CarState & state, CarSteers & steers)
 {
     steers.gear = (int)state.gear;
     
-    if (state.rpm > 9000.0f){
+    if (state.rpm > 9500.0f){
         steers.clutch = 0.5f;
-    gear_dir = 1;
-    } else if (state.rpm < 5000.0f && last_rpm >= 5000.0f) {
-    steers.clutch = 0.5f;
-    gear_dir = -1;
+        gear_dir = 1;
+    } else if (state.rpm < 6000.0f && last_rpm >= 6000.0f) {
+        steers.clutch = 0.5f;
+        gear_dir = -1;
     }	
     
     if (steers.clutch > 0.4f) {

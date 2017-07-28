@@ -118,8 +118,9 @@ void HingyTrack::CacheHinges()
     FILE * f = fopen(tmp_filename.c_str(), "wb");
 
     if (f) {
-        assert(fwrite(hinges.data(), sizeof(Hinge), hinges.size(), f)
-            == hinges.size());
+        int hinges_written = fwrite(hinges.data(), sizeof(Hinge), hinges.size(), f);
+        assert(hinges_written == hinges.size());
+        
         fclose(f);
     }
 }
@@ -129,7 +130,8 @@ bool HingyTrack::LoadHingesFromCache()
     FILE * f = fopen(tmp_filename.c_str(), "rb");
 
     if (f) {
-	assert(fread(hinges.data(), sizeof(Hinge), hinges.size(), f) == hinges.size());
+        int hinges_read = fread(hinges.data(), sizeof(Hinge), hinges.size(), f);
+	assert(hinges_read == hinges.size());
 	fclose(f);
 	return true;
     }

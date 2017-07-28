@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+
 #include <boost/range/combine.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -12,6 +13,11 @@
 #include "EvolutionaryTrainer.h"
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
+
+#ifdef _WIN64
+#define popen _popen
+#define pclose _pclose
+#endif
 
 
 using namespace rapidxml;
@@ -28,9 +34,9 @@ const string tester_options = " 3";
 
 const string hingybot_path = "../../hingybot/hingybot/";
 
-const string individual_being_evaluated = "params/current.xml";
-const string individual_best = "params/best.xml";
-const string individual_initial = "params/initial.xml";
+const string individual_being_evaluated = "configs/current.xml";
+const string individual_best = "configs/best.xml";
+const string individual_initial = "configs/default.xml";
 
 class ParamSeeker : public Trainable<float> {
 public:

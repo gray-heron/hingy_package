@@ -2,6 +2,7 @@
 #include <memory>
 #include <chrono>
 #include <limits.h>
+#include <assert.h>
 
 #include "driver.h"
 #include "torcs_integration.h"

@@ -17,7 +17,7 @@ bool parse_arguments(string name_prefix, char name_value_sep,
 
     for (int arg_i = 0; arg_i < argc; arg_i++) {
         string current_argument(argv[arg_i]), current_name, current_value;
-        int cursor = name_prefix.length();
+        unsigned int cursor = name_prefix.length();
 
         if (name_prefix != "" && current_argument.find(name_prefix) != 0) {
             log_warning((string)"Wrong prefix on argument: " + current_argument + "!");
