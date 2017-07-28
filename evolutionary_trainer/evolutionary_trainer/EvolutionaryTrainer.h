@@ -12,8 +12,8 @@
 
 #define THREADS_N 1
 #define PPP 0.35f
-#define POPULATION_OVERHEAD 3
-#define INITIAL_MUTATIONS_N 3
+#define POPULATION_OVERHEAD 2
+#define INITIAL_MUTATIONS_N 2
 
 using std::vector;
 using std::pair;
@@ -76,10 +76,10 @@ public:
         vector<std::thread> threads;
         vector<
             vector< //each thread produces children into these subvectors
-            pair<
-            shared_ptr<Trainable<scalartype>>,
-            scalartype
-            >
+                pair<
+                    shared_ptr<Trainable<scalartype>>,
+                    scalartype
+                >
             >
         > newborns;
 
@@ -132,7 +132,7 @@ public:
         for (int i = 0; i < THREADS_N; i++)
             threads[i].join();
 
-        auto children_deploy_cursor = population.end() - 1;
+        auto children_deploy_cursor = population.rbegin();
         for (const auto& children : newborns) {
             for (auto child = children.begin();
                 //                      \/ ------ ensure we won't substitute the alphas ---------
@@ -140,9 +140,9 @@ public:
                 child++)
             {
                 *children_deploy_cursor = *child;
-                if (children_deploy_cursor == population.begin())
+                if (children_deploy_cursor == population.rend())
                     break;
-                --children_deploy_cursor;
+                ++children_deploy_cursor;
             }
         }
 

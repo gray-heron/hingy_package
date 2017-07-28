@@ -6,7 +6,7 @@
 #include "main.h"
 
 class SimIntegration {
-public:
+public: 
     virtual CarState Begin(stringmap driver_params) = 0;
     virtual void Cycle(CarSteers&, CarState&) = 0;
 

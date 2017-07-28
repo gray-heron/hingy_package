@@ -134,16 +134,15 @@ namespace TORCSTester
                 while (i != input.Length && "1234567890".Contains(input[i]))
                     score += input[i++];
             }
-            /*
-            while (i != pattern.Length)
+            
+            while (i - score.Length + 1 != pattern.Length)
             {
-                if (pattern[i] != input[i])
+                if (pattern[i - score.Length + 1] != input[i])
                     return null;
 
                 i += 1;
             }
-            */
-
+            
             return float.Parse(score, System.Globalization.NumberStyles.Any);
         }
     }

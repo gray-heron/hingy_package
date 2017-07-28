@@ -15,6 +15,9 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
     float sb = std::stof(params["sb"]);
     float sc = std::stof(params["sc"]);
 
+    master_output_factor = std::stof(params["master_output_factor"]);
+    steering_factor = std::stof(params["steering_factor"]);
+
     speed_factor = std::stof(params["speed_factor"]);
     speed_base = std::stof(params["speed_base"]);
 
@@ -76,8 +79,8 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
         -state.cross_position, dt);
 
     steers.steering_wheel = angle_control.Update(
-        hinge_data.second - 1.0f * master_out,
-        1.0f * state.angle, dt
+        hinge_data.second - master_output_factor * master_out,
+        steering_factor * state.angle, dt
     );
 
     track->MarkWaypoint(
@@ -90,13 +93,13 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
     float target_speed;
 
     if(track->Recording())
-    target_speed = 45.0f;
+        target_speed = 45.0f;
     else {
-    float hs = track->GetHingeSpeed();
-    if (hs < 1.0f)
-        target_speed = hs * speed_factor + speed_base;
-    else
-        target_speed = 1000.0f;
+        float hs = track->GetHingeSpeed();
+        if (hs < 1.0f)
+            target_speed = hs * speed_factor + speed_base;
+        else
+            target_speed = 1000.0f;
     }
 
     steers.hand_brake = std::max(-steers.gas, 0.0f);
@@ -112,10 +115,10 @@ void HingyDriver::SetClutchAndGear(const CarState & state, CarSteers & steers)
 {
     steers.gear = (int)state.gear;
     
-    if (state.rpm > 9500.0f){
+    if (state.rpm > 9200.0f){
         steers.clutch = 0.5f;
         gear_dir = 1;
-    } else if (state.rpm < 6000.0f && last_rpm >= 6000.0f) {
+    } else if (state.rpm < 5500.0f && last_rpm >= 5500.0f) {
         steers.clutch = 0.5f;
         gear_dir = -1;
     }	
