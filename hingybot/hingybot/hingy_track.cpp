@@ -22,6 +22,7 @@ inline float sgn(float& a1) {
     return -1.0f;
 }
 
+FILE * dump;
 HingyTrack::HingyTrack(string filename) : filename(filename)
 {
     if (file_exists(filename)) {
@@ -68,6 +69,7 @@ HingyTrack::HingyTrack(string filename) : filename(filename)
     tmp_filename = (string)"tmp/" + tmp + (string)".hinges";
     
     waypoints.reserve(1000000);
+    dump = fopen("dump2.txt", "w");
 }
 
 void HingyTrack::BeginRecording()
@@ -143,11 +145,7 @@ void HingyTrack::MarkWaypoint(float forward, float l, float r, float angle, floa
 {
     if (hinges.size() > 0) {
         forward -= fshift; //40.4f
-        current_hinge = 0;
-
-        while (current_hinge < hinges.size() && forward > hinges[current_hinge].forward)
-            current_hinge = current_hinge + 1;
-        current_hinge = (current_hinge + hinges.size() - 1) % hinges.size();
+        current_hinge = GetCurrentHinge(forward);
 
         interhinge_pos = forward - hinges[current_hinge].forward;
         interhinge_pos /= hinges[(current_hinge + 1) % hinges.size()].forward -
@@ -298,13 +296,15 @@ void HingyTrack::SimulateHinges(float straightening_factor, float pulling_factor
     }
 }
 
-std::pair<float, float> HingyTrack::GetHingePosAndHeading()
+std::pair<float, float> HingyTrack::GetHingePosAndHeading(float forward)
 {
     if (hinges.size() == 0)
         return std::pair<float, float>(0.0f, 0.0f);
 
     if (last_forward < fshift)
 	return std::pair<float, float>(0.0f, 0.0f);
+
+    auto current_hinge = this->GetCurrentHinge(forward - fshift);
 
     const auto& hp = hinges[current_hinge % hinges.size()];
     const auto& hn = hinges[(current_hinge + 1) % hinges.size()];
@@ -335,6 +335,7 @@ std::pair<float, float> HingyTrack::GetHingePosAndHeading()
     float out_h = out_h1 * (1.0f - interhinge_pos) + interhinge_pos * out_h2;
 
     //printf("%f \t %f\t %f\n", interhinge_pos, out_pos, out_h);
+    fprintf(dump, "%f %f\n", last_forward, out_h);
     return std::pair<float, float>(out_pos * 0.76f, out_h * -0.5f);
 }
 
@@ -376,6 +377,15 @@ void HingyTrack::ConstructSpeeds(float s, float p, float c)
         i->desired_speed = energy;
         counter -= 1;
     }
+}
+
+int HingyTrack::GetCurrentHinge(float fwd)
+{
+    current_hinge = 0;
+
+    while (current_hinge < hinges.size() && fwd > hinges[current_hinge].forward)
+        current_hinge = current_hinge + 1;
+    return (current_hinge + hinges.size() - 1) % hinges.size();
 }
 
 // === GUI ===

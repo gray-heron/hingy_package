@@ -41,7 +41,6 @@ protected:
     float bound_factor = 0.75;
     float forward_factor = 0.40f;
 
-    float hinge_sep = 1.0f;
     float sep_dist;
     float interhinge_pos;
     bool recording = false;
@@ -58,6 +57,7 @@ public:
     HingyTrack(std::string filename);
 
     float fshift = 37.0f;
+    float hinge_sep = 1.0f;
 
     bool Recording();
     virtual void BeginRecording();
@@ -66,9 +66,10 @@ public:
     virtual void ConstructBounds();
     virtual void ConstructHinges(float skip);
     virtual void SimulateHinges(float straightening_factor, float pulling_factor);
-    virtual std::pair<float, float> GetHingePosAndHeading();
+    virtual std::pair<float, float> GetHingePosAndHeading(float);
     virtual float GetHingeSpeed();
     virtual void ConstructSpeeds(float s, float p, float c);
+    virtual int GetCurrentHinge(float fwd);
 
     void CacheHinges();
     bool LoadHingesFromCache();

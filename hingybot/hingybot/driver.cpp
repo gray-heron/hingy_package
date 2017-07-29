@@ -56,8 +56,8 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
         track->BeginRecording();
     }
 
-    cross_position_control = PidController(-0.39f, -0.0f, 0.0f, 1.0f);
-    angle_control = PidController(-2.9f, -0.0f, 0.0f, 1.0f);
+    cross_position_control = PidController(-0.29f, -0.1f, 0.0f, 1.0f);
+    angle_control = PidController(-2.5f, -0.1f, 0.0f, 1.0f);
 }
 
 void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
@@ -73,7 +73,9 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
         angle_control.AntiWindup();
     }
 
-    auto hinge_data = track->GetHingePosAndHeading();
+    auto hinge_data = track->GetHingePosAndHeading(state.absolute_odometer);
+    auto hinge_data_next = track->GetHingePosAndHeading(state.absolute_odometer + track->hinge_sep / 4.0f);
+    hinge_data.second = (hinge_data.second + hinge_data_next.second) / 2.0f;
 
     float master_out = cross_position_control.Update(hinge_data.first * 0.95f,
         -state.cross_position, dt);
@@ -98,7 +100,7 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
         float hs = track->GetHingeSpeed();
         if (hs < 1.0f)
             target_speed = hs * speed_factor + speed_base;
-        else
+        else 
             target_speed = 1000.0f;
     }
 
@@ -109,7 +111,7 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
 	steers.gas = 0.0f;
 
     if(state.speed_x < 30.0f)
-	steers.steering_wheel /= 2.0f;
+	steers.steering_wheel /= 4.0f;
 
     SetClutchAndGear(state, steers);
 }
