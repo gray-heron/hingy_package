@@ -20,6 +20,8 @@ namespace TORCSTester
                 Console.WriteLine("Usage: runner.exe config.xml threads_count");
             }
 
+	    System.Diagnostics.Process.Start("killall", "-9 hingybot torcs-bin").WaitForExit();
+
             var test = Configuration.Read(args[0]);
             var tester = new Runner(test);
             var results = tester.Run(test.cases, System.Convert.ToInt32(args[1]), StandardFeedback);

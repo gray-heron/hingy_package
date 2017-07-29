@@ -303,6 +303,9 @@ std::pair<float, float> HingyTrack::GetHingePosAndHeading()
     if (hinges.size() == 0)
         return std::pair<float, float>(0.0f, 0.0f);
 
+    if (last_forward < fshift)
+	return std::pair<float, float>(0.0f, 0.0f);
+
     const auto& hp = hinges[current_hinge % hinges.size()];
     const auto& hn = hinges[(current_hinge + 1) % hinges.size()];
     const auto& hnn = hinges[(current_hinge + 2) % hinges.size()];
@@ -339,6 +342,9 @@ float HingyTrack::GetHingeSpeed()
 {
     if (hinges.size() == 0)
         return 0.1f;
+
+    if (last_forward < fshift)
+	return 1.0f;
 
     return hinges[current_hinge].desired_speed;
 }

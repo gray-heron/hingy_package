@@ -59,6 +59,11 @@ void TorcsIntegration::ParseCarState(std::string in, CarState& state)
     char* cursor = (char*)in.c_str();
     string param_name;
 
+    if(in == "***shutdown***"){
+	log_info("Shutdown command received, bye bye.");
+	exit(0);
+    }
+
     while (*cursor != '\0') {
         if (*(cursor++) != '(') {
             log_error("Unimplemented case!");

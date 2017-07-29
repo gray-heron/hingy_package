@@ -8,7 +8,7 @@ build/%.o: hingybot/%.cpp
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 default: $(MODULES)
-	$(CC) -o hingybot/hingybot $(LIBS) $(MODULES)
+	$(CC) -o hingybot/hingybot $(MODULES) $(LIBS) 
 
 clean:
 	rm -r build

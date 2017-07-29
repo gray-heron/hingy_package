@@ -56,8 +56,8 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
         track->BeginRecording();
     }
 
-    cross_position_control = PidController(-0.26f, -0.0f, 0.0f, 1.0f);
-    angle_control = PidController(-2.2f, -0.0f, 0.0f, 1.0f);
+    cross_position_control = PidController(-0.39f, -0.0f, 0.0f, 1.0f);
+    angle_control = PidController(-2.9f, -0.0f, 0.0f, 1.0f);
 }
 
 void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
@@ -75,7 +75,7 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
 
     auto hinge_data = track->GetHingePosAndHeading();
 
-    float master_out = cross_position_control.Update(hinge_data.first,
+    float master_out = cross_position_control.Update(hinge_data.first * 0.95f,
         -state.cross_position, dt);
 
     steers.steering_wheel = angle_control.Update(
@@ -106,7 +106,10 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
     steers.gas = (target_speed - state.speed_x) / 35.0f;
 
     if(std::abs(state.cross_position) > 1.0f)
-    steers.gas = 0.0f;
+	steers.gas = 0.0f;
+
+    if(state.speed_x < 30.0f)
+	steers.steering_wheel /= 2.0f;
 
     SetClutchAndGear(state, steers);
 }
@@ -118,7 +121,7 @@ void HingyDriver::SetClutchAndGear(const CarState & state, CarSteers & steers)
     if (state.rpm > 9200.0f){
         steers.clutch = 0.5f;
         gear_dir = 1;
-    } else if (state.rpm < 5500.0f && last_rpm >= 5500.0f) {
+    } else if (state.rpm < 5000.0f && last_rpm >= 5000.0f) {
         steers.clutch = 0.5f;
         gear_dir = -1;
     }	

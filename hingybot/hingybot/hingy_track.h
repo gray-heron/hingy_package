@@ -57,7 +57,7 @@ public:
     virtual ~HingyTrack() {};
     HingyTrack(std::string filename);
 
-    float fshift = 38.0f;
+    float fshift = 37.0f;
 
     bool Recording();
     virtual void BeginRecording();

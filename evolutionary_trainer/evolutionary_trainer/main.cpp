@@ -27,16 +27,16 @@ enum ParamsNames {
     ParamMutationChance = 0, MutationPower
 };
 
-const string tester_path = "..\\..\\TORCSTester\\TORCSTester\\";
-const string tester_executable = "bin\\Debug\\TORCSTester.exe";
-const string tester_profile = "cases\\learn_windows.xml";
-const string tester_options = " 3";
+const string tester_path = "../../TORCSTester/TORCSTester/";
+const string tester_executable = "bin/Debug/TORCSTester.exe";
+const string tester_profile = "cases/learn.xml";
+const string tester_options = " 4";
 
-const string hingybot_path = "..\\..\\hingybot\\hingybot\\";
+const string hingybot_path = "../../hingybot/hingybot/";
 
-const string individual_being_evaluated = "configs\\current.xml";
-const string individual_best = "configs\\best.xml";
-const string individual_initial = "configs\\initial.xml";
+const string individual_being_evaluated = "configs/current.xml";
+const string individual_best = "configs/best.xml";
+const string individual_initial = "configs/initial.xml";
 
 class ParamSeeker : public Trainable<float> {
 public:
@@ -193,13 +193,13 @@ void ReadParams(std::vector<float>& params) {
         else if ((strcmp(param_node->name(), "sc")) == 0)
             params[2] = atof(param_node->value());
         else if ((strcmp(param_node->name(), "speed_base")) == 0)
-            params[3] = atoi(param_node->value());
+            params[3] = atof(param_node->value());
         else if ((strcmp(param_node->name(), "speed_factor")) == 0)
-            params[4] = atoi(param_node->value());
+            params[4] = atof(param_node->value());
         else if ((strcmp(param_node->name(), "master_output_factor")) == 0)
-            params[5] = atoi(param_node->value());
+            params[5] = atof(param_node->value());
         else if ((strcmp(param_node->name(), "steering_factor")) == 0)
-            params[6] = atoi(param_node->value());
+            params[6] = atof(param_node->value());
         else if ((strcmp(param_node->name(), "fshift")) == 0) {}
         else if ((strcmp(param_node->name(), "speed_base")) == 0) {}
         else if ((strcmp(param_node->name(), "speed_factor")) == 0) {}
@@ -212,7 +212,7 @@ void ReadParams(std::vector<float>& params) {
     delete[] buf;
 }
 
-float best = 0.0;
+float best = -100.0;
 
 float ParamsFitness(std::shared_ptr<Trainable<float>> seeker) {
     float fitness;
@@ -231,6 +231,7 @@ float ParamsFitness(std::shared_ptr<Trainable<float>> seeker) {
     if (-fitness > best) {
         best = -fitness;
         WriteParams(tmp_seeker->end_params, individual_best);
+	WriteParams(tmp_seeker->end_params, individual_best + "_" + std::to_string(-fitness));
         printf("New best! %f\n", -fitness);
     }
 
@@ -244,12 +245,12 @@ int main()
     ReadParams(params);
     vector<float> full_params;
     full_params.resize(9);
-    full_params[ParamsNames::MutationPower] = 0.05f;
-    full_params[ParamsNames::ParamMutationChance] = 2.0f;
+    full_params[ParamsNames::MutationPower] = 0.02f;
+    full_params[ParamsNames::ParamMutationChance] = 2.5f;
     std::copy(params.begin(), params.end(), full_params.begin() + 2);
-
+    
     auto gen = Randomizer<float>(2);
-    auto trainer = new Trainer<ParamSeeker>(30, 0, 0, 1.0f, 1.0f, ParamsFitness, full_params, gen) ;
+    auto trainer = new Trainer<ParamSeeker>(36, 0, 0, 1.0f, 1.0f, ParamsFitness, full_params, gen) ;
 
     while (true) {
         printf("Gene %f\n", trainer->Generation(gen));

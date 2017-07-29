@@ -28,7 +28,7 @@ namespace TORCSTester
             server_proc.StartInfo.WorkingDirectory = config.server_path;
             server_proc.StartInfo.RedirectStandardOutput = true;
             server_proc.StartInfo.UseShellExecute = false;
-
+	    
             var client_proc = new Process();
             client_proc.StartInfo.Arguments = config.client_args + " " + test.client_args;
             client_proc.StartInfo.FileName = config.client_executable;
@@ -36,6 +36,7 @@ namespace TORCSTester
             client_proc.StartInfo.UseShellExecute = false;
             client_proc.StartInfo.CreateNoWindow = true;
             client_proc.StartInfo.RedirectStandardOutput = true;
+	    client_proc.StartInfo.UseShellExecute = false;
 
             server_proc.Start();
             client_proc.Start();
@@ -43,6 +44,7 @@ namespace TORCSTester
             while (!server_proc.StandardOutput.EndOfStream)
             {
                 string line = server_proc.StandardOutput.ReadLine();
+
                 if (!released && config.server_confirmation_msg == line)
                 {
                     released = true;
@@ -52,13 +54,24 @@ namespace TORCSTester
                 if (round_score != null)
                 {
                     score = round_score.Value;
+		    
+		    try {
+		    	server_proc.Kill();
+		    }
+		    catch ( InvalidOperationException ) {}
+                    try {
+		    	client_proc.Kill();
+		    }
+		    catch ( InvalidOperationException ) {}     
+
+		    break;
                 }
             }
 
-            server_proc.WaitForExit();
-            client_proc.WaitForExit();
-
-            results.Enqueue(new Tuple<TestCase, float>(test, score));
+	    server_proc.WaitForExit();
+	    client_proc.WaitForExit();
+	    
+	    results.Enqueue(new Tuple<TestCase, float>(test, score));
         }
 
         void Worker() {
@@ -130,7 +143,7 @@ namespace TORCSTester
 
             if (input[i++] == '.')
             {
-                score += ',';
+                score += '.';
                 while (i != input.Length && "1234567890".Contains(input[i]))
                     score += input[i++];
             }
@@ -142,7 +155,6 @@ namespace TORCSTester
 
                 i += 1;
             }
-            
             return float.Parse(score, System.Globalization.NumberStyles.Any);
         }
     }
