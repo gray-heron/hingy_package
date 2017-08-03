@@ -18,6 +18,8 @@
 #endif
 
 using std::string;
+using std::ofstream;
+using std::ios;
 
 const string tester_path = "../../TORCSTester/TORCSTester/";
 const string tester_executable = "bin/Debug/TORCSTester.exe";
@@ -29,7 +31,16 @@ const string individual_being_evaluated = "configs/current.xml";
 const string individual_best = "configs/best.xml";
 const string individual_initial = "configs/initial.xml";
 
+const string grn_best = "grns/best.grn";
+const string grn_current = "grns/current.grn";
+
 float best = -100.0;
+
+void WriteByteTable(string filename, const std::vector<uint8_t>& data) {
+    ofstream outfile(filename, ios::out | ios::binary);
+    outfile.write((char*)data.data(), data.size());
+    outfile.close();
+}
 
 std::string ExecuteTester() {
     std::array<char, 128> buffer; 
@@ -61,17 +72,20 @@ float ParamsFitness(std::shared_ptr<Trainable<float>> seeker) {
     if (-fitness > best) {
         best = -fitness;
         tmp_seeker->WriteParams(hingybot_path + individual_best);
-	tmp_seeker->WriteParams(hingybot_path + individual_best + "_" + std::to_string(-fitness));
+	tmp_seeker->WriteParams(hingybot_path + individual_best + 
+            "_" + std::to_string(-fitness));
         printf("New best! %f\n", -fitness);
     }
 
     return -fitness;
 }
-/*
+
 float GRNFitness(std::shared_ptr<Trainable<float>> grn) {
     float fitness;
     auto tmp_grn = std::dynamic_pointer_cast<ParamSeeker>(grn); //ugly af
-    auto data = grn->Serialize(hingybot_path + individual_being_evaluated);
+
+    WriteByteTable(hingybot_path + grn_current, grn->Serialize());
+
     string out = ExecuteTester();
 
     vector<string> lines;
@@ -84,22 +98,27 @@ float GRNFitness(std::shared_ptr<Trainable<float>> grn) {
 
     if (-fitness > best) {
         best = -fitness;
-        tmp_seeker->WriteParams(hingybot_path + individual_best);
-        tmp_seeker->WriteParams(hingybot_path + individual_best + "_" + std::to_string(-fitness));
-        printf("New best! %f\n", -fitness);
+        WriteByteTable(hingybot_path + grn_best, grn->Serialize());
+        WriteByteTable(hingybot_path + grn_best +
+            "_" + std::to_string(-fitness), grn->Serialize());
+        printf("New best GRN! %f\n", -fitness);
     }
 
     return -fitness;
 }
-*/
+
 
 int main()
 {
-    ParamSeeker seeker;
-    seeker.ReadParams(hingybot_path + individual_initial);
+    //ParamSeeker seeker;
+    //seeker.ReadParams(hingybot_path + individual_initial);
+
+    std::vector<float> params;
+    params.push_back(3.0f); //protein density
 
     auto gen = Randomizer<float>(2);
-    auto trainer = new Trainer<ParamSeeker>(36, 0, 0, 1.0f, 1.0f, ParamsFitness, seeker.end_params, gen) ;
+    auto trainer = new Trainer<GeneRegulatoryNetwork<2>>(20, 6, 4, 1.0f, 1.0f,
+        GRNFitness, params, gen) ;
 
     while (true) {
         printf("Gene %f\n", trainer->Generation(gen));
