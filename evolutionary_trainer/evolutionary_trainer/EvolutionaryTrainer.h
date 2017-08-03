@@ -33,8 +33,8 @@ public:
         vector<scalartype>& parameters, Randomizer<scalartype>& generator) = 0;
 
     virtual int GetMaxSerializedBufferSize() const = 0;
-    virtual uint32_t Serialize(char* buf) const = 0; //warning! after using Serialize(), Configure() not is required
-    virtual uint32_t Deserialize(const char* buf) = 0;
+    virtual std::vector<uint8_t> Serialize() const = 0; //after using Serialize(), Configure() not is required
+    virtual void Deserialize(const std::vector<uint8_t>&) = 0;
 };
 
 template<class TTrainable, typename scalartype = float>
@@ -259,6 +259,8 @@ public:
         assert(population_size % THREADS_N == 0);
     }
 
+    //FIXME rewrite the binary serialization
+    /*
     virtual uint32_t Serialize(char* buf) const {
         uint32_t cursor = 0;
 
@@ -289,4 +291,5 @@ public:
 
         return ret;
     }
+    */
 };

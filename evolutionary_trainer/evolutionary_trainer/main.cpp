@@ -10,6 +10,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "ParamsTrainer.h"
+#include "GeneRegulatoryNetwork.h"
 
 #ifdef _WIN64
 #define popen _popen
@@ -30,7 +31,7 @@ const string individual_initial = "configs/initial.xml";
 
 float best = -100.0;
 
-std::string exec() {
+std::string ExecuteTester() {
     std::array<char, 128> buffer; 
     std::string result;
     std::string tester_call = (tester_path + tester_executable + " " + tester_path + tester_profile + " " + tester_options);
@@ -47,7 +48,7 @@ float ParamsFitness(std::shared_ptr<Trainable<float>> seeker) {
     float fitness;
     auto tmp_seeker = std::dynamic_pointer_cast<ParamSeeker>(seeker); //ugly af
     tmp_seeker->WriteParams(hingybot_path + individual_being_evaluated);
-    string out = exec();
+    string out = ExecuteTester();
 
     vector<string> lines;
     boost::algorithm::split(lines, out, boost::is_any_of("\n"));
@@ -66,6 +67,31 @@ float ParamsFitness(std::shared_ptr<Trainable<float>> seeker) {
 
     return -fitness;
 }
+/*
+float GRNFitness(std::shared_ptr<Trainable<float>> grn) {
+    float fitness;
+    auto tmp_grn = std::dynamic_pointer_cast<ParamSeeker>(grn); //ugly af
+    auto data = grn->Serialize(hingybot_path + individual_being_evaluated);
+    string out = ExecuteTester();
+
+    vector<string> lines;
+    boost::algorithm::split(lines, out, boost::is_any_of("\n"));
+
+    for (auto& line : lines) {
+        if (strncmp(line.c_str(), "Mean ref:", 7) == 0)
+            sscanf(line.c_str(), "Mean ref: %f", &fitness);
+    }
+
+    if (-fitness > best) {
+        best = -fitness;
+        tmp_seeker->WriteParams(hingybot_path + individual_best);
+        tmp_seeker->WriteParams(hingybot_path + individual_best + "_" + std::to_string(-fitness));
+        printf("New best! %f\n", -fitness);
+    }
+
+    return -fitness;
+}
+*/
 
 int main()
 {
@@ -79,7 +105,6 @@ int main()
         printf("Gene %f\n", trainer->Generation(gen));
     }
 
-    printf("%s", exec().c_str());
     return 0;
 }
 

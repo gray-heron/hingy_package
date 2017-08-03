@@ -151,19 +151,23 @@ int ParamSeeker::GetMaxSerializedBufferSize() const
     return end_params.size() * sizeof(float);
 }
 
-uint32_t ParamSeeker::Serialize(char * buf) const
+std::vector<uint8_t> ParamSeeker::Serialize() const
 {
+    std::vector<uint8_t> data_vector;
+    data_vector.resize(GetMaxSerializedBufferSize());
+
     uint32_t params_n = end_params.size();
-    memcpy(buf, &params_n, sizeof(uint32_t));
-    memcpy(buf + sizeof(uint32_t), end_params.data(), GetMaxSerializedBufferSize());
-    return GetMaxSerializedBufferSize() + sizeof(uint32_t);
+    memcpy(data_vector.data(), &params_n, sizeof(uint32_t));
+    memcpy(data_vector.data() + sizeof(uint32_t), end_params.data(), 
+        GetMaxSerializedBufferSize());
+
+    return data_vector;
 }
 
-uint32_t ParamSeeker::Deserialize(const char * buf)
+void ParamSeeker::Deserialize(const std::vector<uint8_t>& data_vector)
 {
     uint32_t params_n;
-    memcpy(&params_n, buf, sizeof(uint32_t));
+    memcpy(&params_n, data_vector.data(), sizeof(uint32_t));
     end_params.resize(params_n);
-    memcpy(end_params.data(), buf + sizeof(uint32_t), params_n * sizeof(uint32_t));
-    return params_n * sizeof(uint32_t) + sizeof(uint32_t);
+    memcpy(end_params.data(), data_vector.data() + sizeof(uint32_t), params_n * sizeof(uint32_t));
 }

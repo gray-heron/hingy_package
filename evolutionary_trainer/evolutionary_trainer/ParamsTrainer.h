@@ -21,9 +21,9 @@ public:
 
     virtual void Configure(uint32_t inputs_n, uint32_t outputs_n, vector<float>& parameters, Randomizer<float>& generator) override;
     virtual int GetMaxSerializedBufferSize() const override;
-    virtual uint32_t Serialize(char * buf) const override;
-    virtual uint32_t Deserialize(const char * buf) override;
+    virtual std::vector<uint8_t> Serialize() const override;
+    virtual void Deserialize(const std::vector<uint8_t>&) override;
 
     void WriteParams(std::string name);
-    void ParamSeeker::ReadParams(std::string name);
+    void ReadParams(std::string name);
 };

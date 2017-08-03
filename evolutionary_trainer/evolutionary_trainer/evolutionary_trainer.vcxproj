@@ -148,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EvolutionaryTrainer.h" />
+    <ClInclude Include="GeneRegulatoryNetwork.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="ParamsTrainer.h" />
     <ClInclude Include="Randomizer.h" />

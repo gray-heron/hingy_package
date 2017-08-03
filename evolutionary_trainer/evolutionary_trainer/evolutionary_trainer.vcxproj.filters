@@ -44,5 +44,8 @@
     <ClInclude Include="ParamsTrainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneRegulatoryNetwork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
