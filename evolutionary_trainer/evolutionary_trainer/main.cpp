@@ -23,7 +23,7 @@ using std::ios;
 
 const string tester_path = "../../TORCSTester/TORCSTester/";
 const string tester_executable = "bin/Debug/TORCSTester.exe";
-const string tester_profile = "cases/learn.xml";
+const string tester_profile = "cases/learn_grn.xml";
 const string tester_options = " 4";
 const string hingybot_path = "../../hingybot/hingybot/";
 
@@ -96,12 +96,13 @@ float GRNFitness(std::shared_ptr<Trainable<float>> grn) {
             sscanf(line.c_str(), "Mean ref: %f", &fitness);
     }
 
+    printf("New GRN! %f\n", -fitness);
     if (-fitness > best) {
         best = -fitness;
         WriteByteTable(hingybot_path + grn_best, grn->Serialize());
         WriteByteTable(hingybot_path + grn_best +
             "_" + std::to_string(-fitness), grn->Serialize());
-        printf("New best GRN! %f\n", -fitness);
+        printf("\tNew best GRN! %f\n", -fitness);
     }
 
     return -fitness;

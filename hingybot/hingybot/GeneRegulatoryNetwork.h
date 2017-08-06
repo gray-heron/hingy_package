@@ -11,6 +11,8 @@
 #include "EvolutionaryTrainer.h"
 #include "Randomizer.h"
 
+#include "utils.h"
+
 template <int D, typename scalartype=float>
 class Protein{
 private:

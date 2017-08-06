@@ -112,7 +112,7 @@ namespace TORCSTester
             foreach (var result in results)
             {
                 if (result.Item2 == 0.0f)
-                    end_results.Add(new Tuple<TestCase, float>(result.Item1, result.Item1.ref1 * 2.0f));
+                    end_results.Add(new Tuple<TestCase, float>(result.Item1, result.Item1.ref1 * 21.0f));
                 else
                     end_results.Add(result);
             }

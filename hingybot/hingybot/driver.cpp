@@ -29,8 +29,10 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
         size_t grn_filesize = file_size(params["grn"]);
 
         if (grn_filesize != -1) {
-            fstream infile(params["grn"], ios::in | ios::binary | ios::ate);
+            fstream infile(params["grn"], ios::in | ios::binary);
 
+	    assert(infile.is_open());
+	    
             std::vector<uint8_t> data_vector;
             data_vector.resize(grn_filesize);
             infile.read((char*)data_vector.data(), grn_filesize);
@@ -38,7 +40,8 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
 
             grn_inputs.resize(13);
 
-            fusion_grn = std::unique_ptr<GeneRegulatoryNetwork<2, float>>();
+            fusion_grn = std::unique_ptr<GeneRegulatoryNetwork<2, float>>
+		(new GeneRegulatoryNetwork<2, float>());
             fusion_grn->Deserialize(data_vector);
             fusion_grn->Reset();
         }
@@ -154,7 +157,7 @@ void HingyDriver::SetClutchAndGear(const CarState & state, CarSteers & steers)
 
     steers.clutch = std::max(0.0f, steers.clutch - 0.1f);
     last_rpm = state.rpm;
-}
+x}
 
 float HingyDriver::GetTargetSpeed(const CarState& state)
 {

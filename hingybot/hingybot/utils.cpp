@@ -2,6 +2,10 @@
 #include <cstring>
 #include <fstream>
 
+#ifndef _WIN64
+#include <sys/stat.h>
+#endif
+
 #include "utils.h"
 
 #include "rapidxml/rapidxml.hpp"

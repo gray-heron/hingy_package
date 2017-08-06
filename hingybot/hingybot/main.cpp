@@ -41,7 +41,7 @@ int main(int argc, char ** argv)
         if (launch_params.find(param.first) == launch_params.end())
             launch_params[param.first] = param.second;
 
-    crash_on_warning = std::stoi(launch_params["paranoid"]) == 0;
+    crash_on_warning = std::stoi(launch_params["paranoid"]) != 0;
 
     auto driver = std::unique_ptr<HingyDriver>(new HingyDriver(launch_params));
 
