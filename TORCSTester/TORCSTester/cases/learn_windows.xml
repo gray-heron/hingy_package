@@ -10,37 +10,69 @@
   <server_confirmation_msg></server_confirmation_msg>
 
   <cases>
-  <TestCase>
-    <name>Street</name>
-    <client_args>port:3001 track:tracks/street.xml</client_args>
-    <server_args>-r config/raceman/confs2/q1Steet.xml</server_args>
-    <ref1>17839</ref1>
-  </TestCase>
-  <TestCase>
-    <name>Speed</name>
-    <client_args>port:3003 track:tracks/speed.xml</client_args>
-    <server_args>-r config/raceman/confs2/q3Speed.xml</server_args>
-    <ref1>9503</ref1>
-  </TestCase>
-  <TestCase>
-    <name>Alpine</name>
-    <client_args>port:3004 track:tracks/alpine.xml</client_args>
-    <server_args>-r config/raceman/confs2/q4Alpine.xml</server_args>
-    <ref1>27873</ref1>
-  </TestCase>
-<!--
-  <TestCase>
-    <name>Emero</name>
-    <client_args>port:3005 track:tracks/emero.xml</client_args>
-    <server_args>-r /home/cezar/hingy_package/TORCSTester/TORCSTester/race_confs/confs2/q5emero.xml</server_args>
-    <ref1>0</ref1>
-  </TestCase>
-  <TestCase>
-    <name>Schwang</name>
-    <client_args>port:3007 track:tracks/Schwang.xml</client_args>
-    <server_args>-r /home/cezar/hingy_package/TORCSTester/TORCSTester/race_confs/confs2/q1Schwang.xml</server_args>
-    <ref1>0</ref1>
+    <TestCase>
+	  <name>Street</name>
+	  <client_args>port:3001 track:tracks/street.xml</client_args>
+	  <server_args>-r config\raceman\confs22\q1Steet.xml</server_args>
+	  <ref1>922</ref1>
     </TestCase>
-    -->
+	<TestCase>
+	  <name>Zlovenovice</name>
+	  <client_args>port:3002 track:tracks/zlovenovice.xml</client_args>
+	  <server_args>-r config\raceman\confs22\q2Zlovenovice.xml</server_args>
+	  <ref1>772</ref1>
+    </TestCase>
+	<TestCase>
+	  <name>Speedway</name>
+	  <client_args>port:3003 track:tracks/speed.xml</client_args>
+	  <server_args>-r config\raceman\confs2\q3Speed.xml</server_args>
+	  <ref1>415</ref1>
+    </TestCase>
+	<TestCase>
+	  <name>Alpine</name>
+	  <client_args>port:3004 track:tracks/alpine.xml</client_args>
+	  <server_args>-r config\raceman\confs2\q4Alpine.xml</server_args>
+	  <ref1>1579</ref1>
+    </TestCase>
+	<TestCase>
+	  <name>Emero</name>
+	  <client_args>port:3005 track:tracks/emero.xml</client_args>
+	  <server_args>-r config\raceman\confs2\q5Emero.xml</server_args>
+	  <ref1>677</ref1>
+    </TestCase>
+	<!--
+	<TestCase>
+	  <name>Schwang</name>
+	  <client_args>port:3006 track:tracks/schwang.xml</client_args>
+	  <server_args>-r config\raceman\confs2\q6Schwang.xml</server_args>
+	  <ref1>415</ref1>
+    </TestCase>
+	
+  	<TestCase>
+	  <name>Keiramekos</name>
+	  <client_args>port:3007 track:tracks/keiramekos.xml</client_args>
+	  <server_args>-r config\raceman\confs2\q7Keiramekos.xml</server_args>
+	  <ref1>415</ref1>
+	  <ref1></ref1>
+    </TestCase>
+-->
+	<TestCase>
+	  <name>Mikegrady</name>
+	  <client_args>port:3008 track:tracks/mikegrady.xml</client_args>
+	  <server_args>-r config\raceman\confs2\q8Mikegrady.xml</server_args>
+	  <ref1>751</ref1>
+    </TestCase>
+	<TestCase>
+	  <name>Noceda</name>
+	  <client_args>port:3009 track:tracks/noceda.xml</client_args>
+	  <server_args>-r config\raceman\confs2\q9Noceda.xml</server_args>
+	  <ref1>579</ref1>
+    </TestCase>
+	<TestCase>
+	  <name>Senhor</name>
+	  <client_args>port:3010 track:tracks/senhor.xml</client_args>
+	  <server_args>-r config\raceman\confs2\q10Senhor.xml</server_args>
+	  <ref1>798</ref1>
+	  </TestCase>
   </cases>
 </Configuration>

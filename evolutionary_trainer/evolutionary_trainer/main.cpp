@@ -117,7 +117,7 @@ int main()
     params.push_back(3.0f); //protein density
 
     auto gen = Randomizer<float>(2);
-    auto trainer = new Trainer<GeneRegulatoryNetwork<2>>(20, 6, 4, 1.0f, 1.0f,
+    auto trainer = new Trainer<GeneRegulatoryNetwork<2>>(20, 13, 2, 1.0f, 1.0f,
         GRNFitness, params, gen) ;
 
     while (true) {

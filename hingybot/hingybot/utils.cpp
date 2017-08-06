@@ -105,14 +105,10 @@ bool file_exists(string name) {
     return false;
 }
 
+//https://stackoverflow.com/questions/5840148/how-can-i-get-a-files-size-in-c
 size_t file_size(std::string name)
 {
-    FILE * f = fopen(name.c_str(), "rb");
-    if (!f)
-        return 0;
-
-    fseek(f, 0, SEEK_END);
-    size_t out = ftell(f);
-    fclose(f);
-    return out;
+    struct stat stat_buf;
+    int rc = stat(name.c_str(), &stat_buf);
+    return rc == 0 ? stat_buf.st_size : -1;
 }

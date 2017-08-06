@@ -155,10 +155,14 @@
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\evolutionary_trainer\evolutionary_trainer\Randomizer.h" />
+    <ClInclude Include="EvolutionaryTrainer.h" />
+    <ClInclude Include="GeneRegulatoryNetwork.h" />
     <ClInclude Include="hingy_track.h" />
     <ClInclude Include="driver.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="car_io.h" />
+    <ClInclude Include="Randomizer.h" />
     <ClInclude Include="torcs_integration.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

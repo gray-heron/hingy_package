@@ -1,7 +1,11 @@
+#include <fstream>
+
 #include "driver.h"
+#include "GeneRegulatoryNetwork.h"
 
 using std::string;
-
+using std::fstream;
+using std::ios;
 
 HingyDriver::HingyDriver(stringmap params) : Driver(params)
 {
@@ -20,6 +24,28 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
 
     speed_factor = std::stof(params["speed_factor"]);
     speed_base = std::stof(params["speed_base"]);
+
+    if (params.find("grn") != params.end()) {
+        size_t grn_filesize = file_size(params["grn"]);
+
+        if (grn_filesize != -1) {
+            fstream infile(params["grn"], ios::in | ios::binary | ios::ate);
+
+            std::vector<uint8_t> data_vector;
+            data_vector.resize(grn_filesize);
+            infile.read((char*)data_vector.data(), grn_filesize);
+            infile.close();
+
+            grn_inputs.resize(13);
+
+            fusion_grn = std::unique_ptr<GeneRegulatoryNetwork<2, float>>();
+            fusion_grn->Deserialize(data_vector);
+            fusion_grn->Reset();
+        }
+        else {
+            log_warning("Couldn't open the GRN file!");
+        }
+    }
 
     int hinges_iterations = atoi(params["hinges_iterations"].c_str());
 
@@ -92,17 +118,7 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
         (state.wheels_speeds[0] - state.wheels_speeds[1]) * -dt,
         state.speed_x);
 
-    float target_speed;
-
-    if(track->Recording())
-        target_speed = 45.0f;
-    else {
-        float hs = track->GetHingeSpeed();
-        if (hs < 1.0f)
-            target_speed = hs * speed_factor + speed_base;
-        else 
-            target_speed = 1000.0f;
-    }
+    float target_speed = GetTargetSpeed(state);
 
     steers.hand_brake = std::max(-steers.gas, 0.0f);
     steers.gas = (target_speed - state.speed_x) / 35.0f;
@@ -140,6 +156,35 @@ void HingyDriver::SetClutchAndGear(const CarState & state, CarSteers & steers)
     last_rpm = state.rpm;
 }
 
+float HingyDriver::GetTargetSpeed(const CarState& state)
+{
+    float agent_speed;
+
+    if (track->Recording())
+        return 45.0f;
+
+    float hs = track->GetHingeSpeed();
+    if (hs < 1.0f)
+        agent_speed = hs * speed_factor + speed_base;
+    else
+        agent_speed = 1000.0f;
+
+    if (fusion_grn) {
+        grn_inputs[0] = agent_speed / 300.0f;
+        grn_inputs[1] = state.speed_x / 300.0f;
+        grn_inputs[2] = std::max(0.0f, state.cross_position);
+        grn_inputs[3] = std::max(0.0f, -state.cross_position);
+        for (int i = 0; i < 9; i++) 
+            grn_inputs[4 + i] = state.sensors[i * 2 + 1];
+        
+        auto outputs = fusion_grn->Step(grn_inputs);
+        return (outputs[0] - outputs[1]) / (outputs[0] + outputs[1])
+            * 300.0f;
+    }
+    else {
+        return agent_speed;
+    }
+}
 
 stringmap HingyDriver::GetSimulatorInitParameters()
 {

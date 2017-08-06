@@ -23,7 +23,7 @@ const std::unordered_map<string, std::pair<size_t, int>> car_state_offset_table 
 
 TorcsIntegration::TorcsIntegration(stringmap params)
 {
-     SDLNet_Init();
+    SDLNet_Init();
 
     packet_in.data = data_in.data();
     packet_out.data = data_out.data();
@@ -60,7 +60,7 @@ void TorcsIntegration::ParseCarState(std::string in, CarState& state)
     string param_name;
 
     if(in == "***shutdown***"){
-	log_info("Shutdown command received, bye bye.");
+	log_info("Shutdown command received. Bye, bye.");
 	exit(0);
     }
 
@@ -75,7 +75,7 @@ void TorcsIntegration::ParseCarState(std::string in, CarState& state)
 
         if (offset != car_state_offset_table.end()) {
             for (int i = 0; i < offset->second.second; i++) {
-                *((float*)
+                *((float*) //behold!
                     ((uint8_t*)&state + offset->second.first + (i * sizeof(float)))
                 ) = strtof(cursor, &cursor);
             }

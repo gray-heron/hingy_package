@@ -17,12 +17,15 @@ const std::vector<string> launch_arguments = {
 };
 
 const std::vector<std::pair<string, string>> default_params = {
-    {"track", "tmp_track.xml"},
+    { "track", "tmp_track.xml"},
     { "gui", "0" },
     { "stage", "1" },
     { "force1", "0" }, { "force2", "0" },
     { "hinges_iterations", "60000"},
+    { "paranoid", "0" }
 };
+
+bool crash_on_warning;
 
 int main(int argc, char ** argv)
 {
@@ -37,6 +40,8 @@ int main(int argc, char ** argv)
     for (auto& param : default_params)
         if (launch_params.find(param.first) == launch_params.end())
             launch_params[param.first] = param.second;
+
+    crash_on_warning = std::stoi(launch_params["paranoid"]) == 0;
 
     auto driver = std::unique_ptr<HingyDriver>(new HingyDriver(launch_params));
 
@@ -77,7 +82,9 @@ void log_error(std::string msg)
 
 void log_warning(std::string msg)
 {
-    fprintf(stdout, "[WARNING] %s\n", msg.c_str());
+    fprintf(stderr, "[WARNING] %s\n", msg.c_str());
+    if (crash_on_warning)
+        log_error("Paranoid crash on warning!\n");
 }
 
 void log_info(std::string msg)

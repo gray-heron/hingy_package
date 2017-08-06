@@ -7,6 +7,9 @@
 #include "hingy_track.h"
 #include "pid_controller.h"
 
+template<int, typename>
+class GeneRegulatoryNetwork;
+
 class Driver {
 public:
     Driver(stringmap params) {};
@@ -24,11 +27,16 @@ private:
     float master_output_factor, steering_factor;
     int gear_dir;
 
+    std::vector<float> grn_inputs;
+
     PidController cross_position_control;
     PidController angle_control;
     PidController speed_control;
 
+    std::unique_ptr<GeneRegulatoryNetwork<2, float>> fusion_grn;
+
     void SetClutchAndGear(const CarState& state, CarSteers& steers);
+    float GetTargetSpeed(const CarState& state);
 
 public:
     HingyDriver(stringmap params);
@@ -36,6 +44,4 @@ public:
 
     virtual void Cycle(CarSteers& steers, const CarState& state);
     virtual stringmap GetSimulatorInitParameters();
-
-    
 };
