@@ -170,6 +170,11 @@ public:
             child1->concentrations.resize(child1->proteins.size());
             child2->concentrations.resize(child2->proteins.size());
 
+	    child1->Mutate(generator);
+	    child1->Mutate(generator);
+	    child2->Mutate(generator);
+	    child2->Mutate(generator);
+	    
             ret.push_back(std::dynamic_pointer_cast<Trainable<scalartype>>(child1));
             ret.push_back(std::dynamic_pointer_cast<Trainable<scalartype>>(child2));
         }

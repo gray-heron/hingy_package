@@ -1,9 +1,9 @@
 <Configuration>
   <server_executable>torcs</server_executable>
-  <server_args></server_args>
+  <server_args>-noisy</server_args>
   <server_path>./</server_path>
   <client_executable>../../hingybot/hingybot/hingybot</client_executable>
-  <client_args>gui:0 params:configs/best.xml hinges_iterations:60000 force1:1.0 force2:0.02</client_args>
+  <client_args>gui:0 grn:grns/best2.grn params:configs/best.xml hinges_iterations:60000 force1:1.0 force2:0.02</client_args>
   <client_path>../../hingybot/hingybot/</client_path>
   <server_config_file></server_config_file> 
   <server_score_captureline>Sim Time:   # [s], Leader Laps:    10, Leader Distance:</server_score_captureline>

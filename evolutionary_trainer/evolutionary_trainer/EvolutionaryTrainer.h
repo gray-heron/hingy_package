@@ -13,7 +13,7 @@
 #define THREADS_N 1
 #define PPP 0.35f
 #define POPULATION_OVERHEAD 2
-#define INITIAL_MUTATIONS_N 2
+#define INITIAL_MUTATIONS_N 8
 
 using std::vector;
 using std::pair;

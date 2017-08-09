@@ -4,7 +4,7 @@
 	<sc>0.072654</sc>
 	<speed_base>119.862717</speed_base>
 	<speed_factor>155.000000</speed_factor>
-	<master_output_factor>0.978499</master_output_factor>
-	<steering_factor>1.022850</steering_factor>
+	<master_output_factor>1.0</master_output_factor>
+	<steering_factor>1.0</steering_factor>
 </hingybot_params>
 

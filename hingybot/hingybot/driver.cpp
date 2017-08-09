@@ -85,8 +85,8 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
         track->BeginRecording();
     }
 
-    cross_position_control = PidController(-0.29f, -0.1f, 0.0f, 1.0f);
-    angle_control = PidController(-2.5f, -0.1f, 0.0f, 1.0f);
+    cross_position_control = PidController(-0.29f, -0.0f, 0.0f, 1.0f);
+    angle_control = PidController(-2.5f, -0.0f, 0.0f, 1.0f);
 }
 
 void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
@@ -126,11 +126,14 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
     steers.hand_brake = std::max(-steers.gas, 0.0f);
     steers.gas = (target_speed - state.speed_x) / 35.0f;
 
+    if(std::abs(steers.steering_wheel) > 0.9f)
+	steers.gas /= 3.0f;
+    
     if(std::abs(state.cross_position) > 1.0f)
 	steers.gas = 0.0f;
 
     if(state.speed_x < 30.0f)
-	steers.steering_wheel /= 4.0f;
+	steers.steering_wheel /= 1.5f;
 
     SetClutchAndGear(state, steers);
 }
@@ -157,7 +160,7 @@ void HingyDriver::SetClutchAndGear(const CarState & state, CarSteers & steers)
 
     steers.clutch = std::max(0.0f, steers.clutch - 0.1f);
     last_rpm = state.rpm;
-x}
+}
 
 float HingyDriver::GetTargetSpeed(const CarState& state)
 {
@@ -173,7 +176,7 @@ float HingyDriver::GetTargetSpeed(const CarState& state)
         agent_speed = 1000.0f;
 
     if (fusion_grn) {
-        grn_inputs[0] = agent_speed / 300.0f;
+        grn_inputs[0] = 1.0f;
         grn_inputs[1] = state.speed_x / 300.0f;
         grn_inputs[2] = std::max(0.0f, state.cross_position);
         grn_inputs[3] = std::max(0.0f, -state.cross_position);
@@ -187,6 +190,19 @@ float HingyDriver::GetTargetSpeed(const CarState& state)
     else {
         return agent_speed;
     }
+}
+
+void HingyDriver::StuckOverride(CarSteers& steers, const CarState& state, float dt) {
+    /*    if(state.speed_x > 30.0f || state.forward > 30.0f) {
+	stuck_counter = 0.0f;
+	return;
+    }
+
+    stuck_counter += dt;
+
+    if(stuck_counter > 2.0f) {
+	log_info("Stuck!\n");
+	} */
 }
 
 stringmap HingyDriver::GetSimulatorInitParameters()

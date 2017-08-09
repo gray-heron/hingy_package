@@ -34,7 +34,7 @@ const string individual_initial = "configs/initial.xml";
 const string grn_best = "grns/best.grn";
 const string grn_current = "grns/current.grn";
 
-float best = -100.0;
+float best = -2000.0;
 
 void WriteByteTable(string filename, const std::vector<uint8_t>& data) {
     ofstream outfile(filename, ios::out | ios::binary);
@@ -118,7 +118,7 @@ int main()
     params.push_back(3.0f); //protein density
 
     auto gen = Randomizer<float>(2);
-    auto trainer = new Trainer<GeneRegulatoryNetwork<2>>(20, 13, 2, 1.0f, 1.0f,
+    auto trainer = new Trainer<GeneRegulatoryNetwork<2>>(40, 13, 2, 1.0f, 1.0f,
         GRNFitness, params, gen) ;
 
     while (true) {
