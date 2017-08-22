@@ -23,13 +23,13 @@ using std::ios;
 
 const string tester_path = "../../TORCSTester/TORCSTester/";
 const string tester_executable = "bin/Debug/TORCSTester.exe";
-const string tester_profile = "cases/learn_grn.xml";
+const string tester_profile = "cases/learn.xml";
 const string tester_options = " 4";
 const string hingybot_path = "../../hingybot/hingybot/";
 
 const string individual_being_evaluated = "configs/current.xml";
 const string individual_best = "configs/best.xml";
-const string individual_initial = "configs/initial.xml";
+const string individual_initial = "configs/best.xml_2.611959";
 
 const string grn_best = "grns/best.grn";
 const string grn_current = "grns/current.grn";
@@ -111,15 +111,11 @@ float GRNFitness(std::shared_ptr<Trainable<float>> grn) {
 
 int main()
 {
-    //ParamSeeker seeker;
-    //seeker.ReadParams(hingybot_path + individual_initial);
-
-    std::vector<float> params;
-    params.push_back(3.0f); //protein density
+    ParamSeeker seeker;
+    seeker.ReadParams(hingybot_path + individual_initial);
 
     auto gen = Randomizer<float>(2);
-    auto trainer = new Trainer<GeneRegulatoryNetwork<2>>(40, 13, 2, 1.0f, 1.0f,
-        GRNFitness, params, gen) ;
+    auto trainer = new Trainer<ParamSeeker>(36, 0, 0, 1.0f, 1.0f, ParamsFitness, seeker.end_params, gen) ;
 
     while (true) {
         printf("Gene %f\n", trainer->Generation(gen));

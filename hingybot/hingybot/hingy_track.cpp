@@ -359,6 +359,7 @@ void HingyTrack::ConstructSpeeds(float s, float p, float c)
     if (hinges.size() == 0)
         return;
 
+    FILE * f = fopen("energy_dump.txt", "w");
     for (auto i = hinges.rbegin(); i != hinges.rend(); i++) {
         energy -= (s * std::pow(i->curve, 2.0f) + p) * i->curve - c;
 
@@ -372,7 +373,10 @@ void HingyTrack::ConstructSpeeds(float s, float p, float c)
 
         i->desired_speed = energy;
         counter -= 1;
+	fprintf(f, "%f %f %f\n", i->forward, energy, std::abs(i->curve)); 
     }
+
+    fclose(f);
 }
 
 int HingyTrack::GetCurrentHinge(float fwd)

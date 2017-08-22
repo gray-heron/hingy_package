@@ -27,6 +27,7 @@ private:
     float master_output_factor, steering_factor;
     int gear_dir;
     float stuck_counter;
+    bool steering_enabled = false;
 
     std::vector<float> grn_inputs;
 
@@ -37,6 +38,7 @@ private:
     std::unique_ptr<GeneRegulatoryNetwork<2, float>> fusion_grn;
 
     void SetClutchAndGear(const CarState& state, CarSteers& steers);
+    void SetReverseGear(const CarState& state, CarSteers& steers);
     void StuckOverride(CarSteers& steers, const CarState& state, float dt);
     
     float GetTargetSpeed(const CarState& state);

@@ -121,7 +121,7 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
         (state.wheels_speeds[0] - state.wheels_speeds[1]) * -dt,
         state.speed_x);
 
-    float target_speed = GetTargetSpeed(state);
+    float target_speed = std::min(GetTargetSpeed(state), GetTargetSpeed(state));
 
     steers.hand_brake = std::max(-steers.gas, 0.0f);
     steers.gas = (target_speed - state.speed_x) / 35.0f;
@@ -130,20 +130,54 @@ void HingyDriver::Cycle(CarSteers& steers, const CarState& state)
 	steers.gas /= 3.0f;
     
     if(std::abs(state.cross_position) > 1.0f)
-	steers.gas = 0.0f;
+	steers.gas = 0.1f;
 
     if(state.speed_x < 30.0f)
 	steers.steering_wheel /= 1.5f;
 
-    SetClutchAndGear(state, steers);
+    if(state.absolute_odometer < 100.0f){
+	steering_enabled = true;
+    }
+    
+    if (std::abs(state.angle) > HALF_PI ||
+	(std::abs(state.cross_position) > 1.0f && state.speed_x < 5.0f))
+	SetReverseGear(state, steers);
+    else 
+	SetClutchAndGear(state, steers);
+
+    if(state.speed_x < 0.0f){
+	steers.steering_wheel *= -1;
+    }
+
+    if(!steering_enabled)
+	steers.steering_wheel = 0.0f;
 }
 
+void HingyDriver::SetReverseGear(const CarState & state, CarSteers & steers)
+{
+    int curent_gear = (int)state.gear;
+
+    if(state.speed_x  > 10.0f){
+	steers.clutch = 1.0f;
+	steers.hand_brake = 1.0f;
+	steers.gas = 0.0f;
+
+	return;
+    }
+   
+    steers.clutch = std::max(0.0f, steers.clutch - 0.1f);
+    steers.gear = -1;
+    steers.gas = 1.0f;
+    
+    last_rpm = state.rpm;
+}
+ 
 void HingyDriver::SetClutchAndGear(const CarState & state, CarSteers & steers)
 {
     steers.gear = (int)state.gear;
     
     if (state.rpm > 9200.0f){
-        steers.clutch = 0.5f;
+        steers.clutch = steers.gear > 0 ? 0.5f : 1.0f;
         gear_dir = 1;
     } else if (state.rpm < 5000.0f && last_rpm >= 5000.0f) {
         steers.clutch = 0.5f;
