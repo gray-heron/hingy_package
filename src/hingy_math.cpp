@@ -2,8 +2,10 @@
 
 #include "hingy_math.h"
 
-float sgn(float& a1) {
-    if (a1 > 0) {
+float sgn(float &a1)
+{
+    if (a1 > 0)
+    {
         return 1.0;
     }
 
@@ -18,17 +20,12 @@ Vector2D Vector2D::operator*(Direction rhs)
     return Vector2D(nx, ny);
 }
 
-Direction Vector2D::ToDirection()
-{
-    return{ std::atan2(y, x) };
-}
+Direction Vector2D::ToDirection() { return {std::atan2(y, x)}; }
 
-float Vector2D::Length()
-{
-    return std::sqrt(x * x + y * y);
-}
+float Vector2D::Length() { return std::sqrt(x * x + y * y); }
 
-float Direction::operator-(const Direction& rhs) const {
+float Direction::operator-(const Direction &rhs) const
+{
     float a1 = rhs.h;
     float a2 = h;
 
@@ -45,16 +42,12 @@ float Direction::operator-(const Direction& rhs) const {
 
 Direction Direction::operator+(float rhs) const
 {
-    return Direction{ std::fmod((h + rhs + PI), 2.0f * PI) - PI };
+    return Direction{std::fmod((h + rhs + PI), 2.0f * PI) - PI};
 }
 
-Direction Direction::operator+(Direction rhs)
-{
-    return (*this) + rhs.h;
-}
+Direction Direction::operator+(Direction rhs) { return (*this) + rhs.h; }
 
 Direction Direction::Inv()
 {
-    return Direction{ std::fmod((h + 2.0f * PI), 2.0f * PI) - PI };
+    return Direction{std::fmod((h + 2.0f * PI), 2.0f * PI) - PI};
 }
-

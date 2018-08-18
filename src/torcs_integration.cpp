@@ -1,8 +1,8 @@
 #include <climits>
 #include <unordered_map>
 
-#include "torcs_integration.h"
 #include "main.h"
+#include "torcs_integration.h"
 
 using std::string;
 
@@ -36,14 +36,19 @@ TorcsIntegration::TorcsIntegration(stringmap params)
     if (params.find("port") != params.end())
         port = std::stoi(params["port"]);
 
-    if (params.find("host") != params.end()) {
-        if (SDLNet_ResolveHost(&simulator_address, params["host"].c_str(), port) == -1) {
+    if (params.find("host") != params.end())
+    {
+        if (SDLNet_ResolveHost(&simulator_address, params["host"].c_str(),
+                               port) == -1)
+        {
             log_error("Simulator address couldn't be resolved!");
             throw;
         }
     }
-    else {
-        if (SDLNet_ResolveHost(&simulator_address, "localhost", port) == -1) {
+    else
+    {
+        if (SDLNet_ResolveHost(&simulator_address, "localhost", port) == -1)
+        {
             log_error("Simulator address couldn't be resolved!");
             throw;
         }
@@ -56,18 +61,21 @@ void TorcsIntegration::PreparePacketOut(string data)
     packet_out.len = (int)data.length();
 }
 
-void TorcsIntegration::ParseCarState(std::string in, CarState& state)
+void TorcsIntegration::ParseCarState(std::string in, CarState &state)
 {
-    char* cursor = (char*)in.c_str();
+    char *cursor = (char *)in.c_str();
     string param_name;
 
-    if(in == "***shutdown***"){
-	log_info("Shutdown command received. Bye, bye.");
-	exit(0);
+    if (in == "***shutdown***")
+    {
+        log_info("Shutdown command received. Bye, bye.");
+        exit(0);
     }
 
-    while (*cursor != '\0') {
-        if (*(cursor++) != '(') {
+    while (*cursor != '\0')
+    {
+        if (*(cursor++) != '(')
+        {
             log_error("Unimplemented case!");
             throw;
         }
@@ -75,27 +83,30 @@ void TorcsIntegration::ParseCarState(std::string in, CarState& state)
         param_name = ParseString(&cursor);
         auto offset = car_state_offset_table.find(param_name);
 
-        if (offset != car_state_offset_table.end()) {
-            for (int i = 0; i < offset->second.second; i++) {
-                *((float*) //behold!
-                    ((uint8_t*)&state + offset->second.first + (i * sizeof(float)))
-                ) = strtof(cursor, &cursor);
+        if (offset != car_state_offset_table.end())
+        {
+            for (int i = 0; i < offset->second.second; i++)
+            {
+                *((float *) // behold!
+                  ((uint8_t *)&state + offset->second.first +
+                   (i * sizeof(float)))) = strtof(cursor, &cursor);
             }
 
             if (*(cursor++) != ')')
                 throw;
         }
-        else {
-            while (*(cursor++) != ')');
+        else
+        {
+            while (*(cursor++) != ')')
+                ;
         }
     }
-
 }
 
-string TorcsIntegration::ParseString(char ** cursor)
+string TorcsIntegration::ParseString(char **cursor)
 {
     string out;
-    char * tmp_cursor = *cursor;
+    char *tmp_cursor = *cursor;
 
     while (*(tmp_cursor++) != ' ')
         out += *(tmp_cursor - 1);
@@ -113,56 +124,63 @@ CarState TorcsIntegration::Begin(stringmap params)
     socket_set = SDLNet_AllocSocketSet(1);
 
     socket = SDLNet_UDP_Open(0);
-    if (!socket) {
+    if (!socket)
+    {
         log_error(string("UDP socket couldn't be opened, error: ") +
-            SDLNet_GetError());
+                  SDLNet_GetError());
         throw;
     }
     SDLNet_UDP_AddSocket(socket_set, socket);
 
     string init_string = "SCR(init", instring;
-    for (int i = -9; i <= 9; i++) {
+    for (int i = -9; i <= 9; i++)
+    {
         init_string += string(" ") + params[string("ds") + std::to_string(i)];
     }
     init_string += ")";
 
     PreparePacketOut(init_string);
 
-    while (true) {
-        do {
+    while (true)
+    {
+        do
+        {
             if (!SDLNet_UDP_Send(socket, -1, &packet_out))
             {
-                log_error(string("UDP send error: ") +
-                    SDLNet_GetError());
+                log_error(string("UDP send error: ") + SDLNet_GetError());
                 throw;
             }
 
             SDL_Delay(50);
         } while (!SDLNet_UDP_Recv(socket, &packet_in));
 
-        if (strcmp((char*)data_in.data(), "***identified***") == 0) {
+        if (strcmp((char *)data_in.data(), "***identified***") == 0)
+        {
             break;
         }
-        else {
+        else
+        {
             log_warning("Communication error on init!");
             throw;
         }
     }
 
-    while (!SDLNet_UDP_Recv(socket, &packet_in));
+    while (!SDLNet_UDP_Recv(socket, &packet_in))
+        ;
 
-    if (data_in[0] == '*' && data_in[1] == '*' && data_in[2] == '*') {
+    if (data_in[0] == '*' && data_in[1] == '*' && data_in[2] == '*')
+    {
         log_error("Unimplemented case!");
         throw;
     }
 
     data_in[packet_in.len] = '\0';
 
-    ParseCarState((char*)data_in.data(), out);
+    ParseCarState((char *)data_in.data(), out);
     return out;
 }
 
-void TorcsIntegration::Cycle(CarSteers& steers, CarState& state)
+void TorcsIntegration::Cycle(CarSteers &steers, CarState &state)
 {
     string out;
 
@@ -173,16 +191,18 @@ void TorcsIntegration::Cycle(CarSteers& steers, CarState& state)
     out += "(gear " + std::to_string(steers.gear) + ")";
     out += "(clutch " + std::to_string(steers.clutch) + ")";
     out += "(steer " + std::to_string(steers.steering_wheel) + ")";
-    //out += "(focus " + std::to_string(steers.focus) + ")";
-    //out += "(meta " + std::to_string(steers.gas) + ")";
+    // out += "(focus " + std::to_string(steers.focus) + ")";
+    // out += "(meta " + std::to_string(steers.gas) + ")";
 
     if (!SDLNet_UDP_Recv(socket, &packet_in))
         SDLNet_CheckSockets(socket_set, -1);
 
-    while (SDLNet_UDP_Recv(socket, &packet_in));
+    while (SDLNet_UDP_Recv(socket, &packet_in))
+        ;
 
-    if (packet_in.len) {
-        ParseCarState((char*)data_in.data(), state);
+    if (packet_in.len)
+    {
+        ParseCarState((char *)data_in.data(), state);
         PreparePacketOut(out);
         SDLNet_UDP_Send(socket, -1, &packet_out);
     }

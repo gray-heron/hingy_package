@@ -2,14 +2,16 @@
 
 #include <cmath>
 
-struct PidController {
+struct PidController
+{
     float P, I, D, max;
 
     float integral = 0;
     float last_v = 0;
 
-    PidController() {};
-    PidController(float K, float Ti, float Td, float max) {
+    PidController(){};
+    PidController(float K, float Ti, float Td, float max)
+    {
         P = K;
         I = Ti;
         D = Td;
@@ -17,7 +19,8 @@ struct PidController {
         this->max = max;
     };
 
-    float Update(float target, float state, float dt) {
+    float Update(float target, float state, float dt)
+    {
         integral += (target - state) * dt;
 
         float pc = (target - state) * P;
@@ -34,8 +37,5 @@ struct PidController {
         return out;
     }
 
-    void AntiWindup()
-    {
-        integral = 0.0;
-    }
+    void AntiWindup() { integral = 0.0; }
 };

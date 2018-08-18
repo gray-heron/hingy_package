@@ -1,28 +1,30 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <tuple>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 
-#include "utils.h"
 #include "hingy_math.h"
+#include "utils.h"
 
 #define THREADS_COUNT 4
 
-class HingyTrack {
-public:
-    struct Waypoint {
+class HingyTrack
+{
+  public:
+    struct Waypoint
+    {
         float f, a, l, r;
     };
 
-protected:
-
-    struct Hinge {
+  protected:
+    struct Hinge
+    {
         float a, b, x, hx, lx, forward;
-        float y; //y might be garbage, use ToWaypoint()
+        float y; // y might be garbage, use ToWaypoint()
         float desired_speed = 55.0f;
         float curve;
         int direction;
@@ -52,8 +54,8 @@ protected:
 
     std::string tmp_filename;
 
-public:
-    virtual ~HingyTrack() {};
+  public:
+    virtual ~HingyTrack(){};
     HingyTrack(std::string filename);
 
     float fshift = 37.0f;
@@ -62,10 +64,12 @@ public:
     bool Recording();
     virtual void BeginRecording();
     virtual void StopRecording();
-    virtual void MarkWaypoint(float forward, float l, float r, float angle, float speed);
+    virtual void MarkWaypoint(float forward, float l, float r, float angle,
+                              float speed);
     virtual void ConstructBounds();
     virtual void ConstructHinges(float skip);
-    virtual void SimulateHinges(float straightening_factor, float pulling_factor);
+    virtual void SimulateHinges(float straightening_factor,
+                                float pulling_factor);
     virtual std::pair<float, float> GetHingePosAndHeading(float);
     virtual float GetHingeSpeed();
     virtual void ConstructSpeeds(float s, float p, float c);
@@ -75,7 +79,8 @@ public:
     bool LoadHingesFromCache();
 };
 
-class HingyTrackGui : public HingyTrack {
+class HingyTrackGui : public HingyTrack
+{
     int rx, ry;
 
     SDL_Window *win = NULL;
@@ -83,7 +88,7 @@ class HingyTrackGui : public HingyTrack {
     SDL_Texture *bitmapTex = NULL;
     SDL_Surface *bitmapSurface = NULL;
 
-public:
+  public:
     void DrawTrack();
     void DrawBounds();
     void DrawHinges();
@@ -93,6 +98,7 @@ public:
     virtual ~HingyTrackGui();
     HingyTrackGui(std::string filename, int resx, int resy);
 
-    virtual void MarkWaypoint(float forward, float l, float r, float angle, float speed);
+    virtual void MarkWaypoint(float forward, float l, float r, float angle,
+                              float speed);
     void KillGui();
 };

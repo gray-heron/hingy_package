@@ -1,7 +1,7 @@
-#include <fstream>
-#include <assert.h>
 #include <algorithm>
+#include <assert.h>
 #include <cfloat>
+#include <fstream>
 
 #include "hingy_track.h"
 #include "utils.h"
@@ -14,8 +14,10 @@
 using std::string;
 using namespace rapidxml;
 
-inline float sgn(float& a1) {
-    if (a1 > 0) {
+inline float sgn(float &a1)
+{
+    if (a1 > 0)
+    {
         return 1.0;
     }
 
@@ -24,13 +26,15 @@ inline float sgn(float& a1) {
 
 HingyTrack::HingyTrack(string filename) : filename(filename)
 {
-    if (file_exists(filename)) {
+    if (file_exists(filename))
+    {
         int size = file_size(filename);
-        char* buf = new char[size + 1];
-        xml_document <> doc;
+        char *buf = new char[size + 1];
+        xml_document<> doc;
         FILE *f = fopen(filename.c_str(), "rb");
 
-        while (ftell(f) != size) {
+        while (ftell(f) != size)
+        {
             fread(&buf[ftell(f)], size, 1, f);
         }
 
@@ -42,18 +46,24 @@ HingyTrack::HingyTrack(string filename) : filename(filename)
         assert(strcmp(track_node->name(), "track") == 0);
         auto waypoint_node = track_node->first_node();
 
-        while (waypoint_node != nullptr) {
+        while (waypoint_node != nullptr)
+        {
             HingyTrack::Waypoint waypoint;
 
             assert(strcmp(waypoint_node->name(), "waypoint") == 0);
             assert(strcmp(waypoint_node->first_node()->name(), "forward") == 0);
-            assert(strcmp(waypoint_node->first_node()->next_sibling()->name(), "left") == 0);
-            assert(strcmp(waypoint_node->last_node()->previous_sibling()->name(), "right") == 0);
+            assert(strcmp(waypoint_node->first_node()->next_sibling()->name(),
+                          "left") == 0);
+            assert(
+                strcmp(waypoint_node->last_node()->previous_sibling()->name(),
+                       "right") == 0);
             assert(strcmp(waypoint_node->last_node()->name(), "angle") == 0);
 
             waypoint.f = atof(waypoint_node->first_node()->value());
-            waypoint.l = atof(waypoint_node->first_node()->next_sibling()->value());
-            waypoint.r = atof(waypoint_node->last_node()->previous_sibling()->value());
+            waypoint.l =
+                atof(waypoint_node->first_node()->next_sibling()->value());
+            waypoint.r =
+                atof(waypoint_node->last_node()->previous_sibling()->value());
             waypoint.a = atof(waypoint_node->last_node()->value());
 
             waypoints.push_back(waypoint);
@@ -64,9 +74,9 @@ HingyTrack::HingyTrack(string filename) : filename(filename)
     }
 
     string tmp = filename;
-    std::replace( tmp.begin(), tmp.end(), '/', '_');
-    tmp_filename = (string)"tmp/" + tmp + (string)".hinges";
-    
+    std::replace(tmp.begin(), tmp.end(), '/', '_');
+    tmp_filename = (string) "tmp/" + tmp + (string) ".hinges";
+
     waypoints.reserve(1000000);
 }
 
@@ -83,26 +93,34 @@ void HingyTrack::StopRecording()
 {
     std::fstream fs;
     fs.open(filename.c_str(), std::fstream::out | std::fstream::trunc);
-    std::vector<char*> to_be_deallocated;
+    std::vector<char *> to_be_deallocated;
 
-    xml_document <> doc;
-    xml_node <> * doc_track = doc.allocate_node(node_element, "track");
+    xml_document<> doc;
+    xml_node<> *doc_track = doc.allocate_node(node_element, "track");
 
-    for (auto & waypoint : waypoints) {
-        char *fb = new char[62]; sprintf(fb, "%f", waypoint.f);
-        char *lb = new char[62]; sprintf(lb, "%f", waypoint.l);
-        char *rb = new char[62]; sprintf(rb, "%f", waypoint.r);
-        char *ab = new char[62]; sprintf(ab, "%f", waypoint.a);
-        to_be_deallocated.insert(to_be_deallocated.end(), { fb, lb, rb, ab });
+    for (auto &waypoint : waypoints)
+    {
+        char *fb = new char[62];
+        sprintf(fb, "%f", waypoint.f);
+        char *lb = new char[62];
+        sprintf(lb, "%f", waypoint.l);
+        char *rb = new char[62];
+        sprintf(rb, "%f", waypoint.r);
+        char *ab = new char[62];
+        sprintf(ab, "%f", waypoint.a);
+        to_be_deallocated.insert(to_be_deallocated.end(), {fb, lb, rb, ab});
 
-        xml_node <> * waypoint_node = doc.allocate_node(node_element, "waypoint");
-        waypoint_node->append_node(doc.allocate_node(node_element, "forward", fb));
+        xml_node<> *waypoint_node = doc.allocate_node(node_element, "waypoint");
+        waypoint_node->append_node(
+            doc.allocate_node(node_element, "forward", fb));
         waypoint_node->append_node(doc.allocate_node(node_element, "left", lb));
-        waypoint_node->append_node(doc.allocate_node(node_element, "right", rb));
-        waypoint_node->append_node(doc.allocate_node(node_element, "angle", ab));
+        waypoint_node->append_node(
+            doc.allocate_node(node_element, "right", rb));
+        waypoint_node->append_node(
+            doc.allocate_node(node_element, "angle", ab));
         doc_track->append_node(std::move(waypoint_node));
     }
-    
+
     doc.append_node(doc_track);
     fs << doc;
     fs.close();
@@ -115,61 +133,70 @@ void HingyTrack::StopRecording()
 
 void HingyTrack::CacheHinges()
 {
-    FILE * f = fopen(tmp_filename.c_str(), "wb");
+    FILE *f = fopen(tmp_filename.c_str(), "wb");
 
-    if (f) {
-        int hinges_written = fwrite(hinges.data(), sizeof(Hinge), hinges.size(), f);
+    if (f)
+    {
+        int hinges_written =
+            fwrite(hinges.data(), sizeof(Hinge), hinges.size(), f);
         assert(hinges_written == hinges.size());
-        
+
         fclose(f);
     }
 }
 
 bool HingyTrack::LoadHingesFromCache()
 {
-    FILE * f = fopen(tmp_filename.c_str(), "rb");
+    FILE *f = fopen(tmp_filename.c_str(), "rb");
 
-    if (f) {
+    if (f)
+    {
         int hinges_read = fread(hinges.data(), sizeof(Hinge), hinges.size(), f);
-	assert(hinges_read == hinges.size());
-	fclose(f);
-	return true;
+        assert(hinges_read == hinges.size());
+        fclose(f);
+        return true;
     }
 
     return false;
 }
 
-void HingyTrack::MarkWaypoint(float forward, float l, float r, float angle, float speed)
+void HingyTrack::MarkWaypoint(float forward, float l, float r, float angle,
+                              float speed)
 {
-    if (hinges.size() > 0) {
-        forward -= fshift; //40.4f
+    if (hinges.size() > 0)
+    {
+        forward -= fshift; // 40.4f
         current_hinge = GetCurrentHinge(forward);
 
         interhinge_pos = forward - hinges[current_hinge].forward;
         interhinge_pos /= hinges[(current_hinge + 1) % hinges.size()].forward -
-            hinges[current_hinge].forward;
+                          hinges[current_hinge].forward;
     }
 
-    if (recording) {
-        if (last_forward - forward > 60.0f && !fuse) {
+    if (recording)
+    {
+        if (last_forward - forward > 60.0f && !fuse)
+        {
             last_forward = forward;
             fuse2 = true;
             return;
         }
 
-        if (!fuse) {
-            if (forward > 50.0f && fuse2) {
+        if (!fuse)
+        {
+            if (forward > 50.0f && fuse2)
+            {
                 StopRecording();
                 return;
             }
-            waypoints.push_back(std::move(HingyTrack::Waypoint{
-                forward - last_forward, angle, l, r }));
+            waypoints.push_back(std::move(
+                HingyTrack::Waypoint{forward - last_forward, angle, l, r}));
         }
-        else if (forward > 50.0f && forward < 60.0f) {
+        else if (forward > 50.0f && forward < 60.0f)
+        {
             fuse = false;
         }
     }
-
 
     last_forward = forward;
 }
@@ -179,16 +206,24 @@ void HingyTrack::ConstructBounds()
     float heading = HALF_PI / 2.0f;
     float x = 0, y = 0;
 
-    for (const auto& waypoint : waypoints) {
-        float lx = x + std::cos(heading + M_PI / 2.0f) * /*waypoint.l * */bound_factor;
-        float ly = y + std::sin(heading + M_PI / 2.0f) * /*waypoint.l * */bound_factor;
+    for (const auto &waypoint : waypoints)
+    {
+        float lx =
+            x +
+            std::cos(heading + M_PI / 2.0f) * /*waypoint.l * */ bound_factor;
+        float ly =
+            y +
+            std::sin(heading + M_PI / 2.0f) * /*waypoint.l * */ bound_factor;
 
-        float rx = x + std::cos(heading - M_PI / 2.0f) * /*waypoint.r * */bound_factor;
-        float ry = y + std::sin(heading - M_PI / 2.0f) * /*waypoint.r * */bound_factor;
+        float rx =
+            x +
+            std::cos(heading - M_PI / 2.0f) * /*waypoint.r * */ bound_factor;
+        float ry =
+            y +
+            std::sin(heading - M_PI / 2.0f) * /*waypoint.r * */ bound_factor;
 
-        bounds.push_back(std::pair<Vector2D, Vector2D>(
-            Vector2D{ lx, ly }, Vector2D{ rx, ry }
-        ));
+        bounds.push_back(
+            std::pair<Vector2D, Vector2D>(Vector2D{lx, ly}, Vector2D{rx, ry}));
 
         x += std::cos(heading) * forward_factor * waypoint.f;
         y += std::sin(heading) * forward_factor * waypoint.f;
@@ -203,8 +238,10 @@ void HingyTrack::ConstructHinges(float skip)
     float fuse = FLT_MAX, forward_sum = 0.0f;
     int i = 0;
 
-    for (auto bound = bounds.begin(); bound != bounds.end(); ++bound) {
-        if (waypoints[i].f + fuse > skip) {
+    for (auto bound = bounds.begin(); bound != bounds.end(); ++bound)
+    {
+        if (waypoints[i].f + fuse > skip)
+        {
             Hinge h;
 
             if (bound->first.x == bound->second.x)
@@ -225,7 +262,8 @@ void HingyTrack::ConstructHinges(float skip)
             hinges.push_back(std::move(h));
             fuse = 0.0f;
         }
-        else {
+        else
+        {
             fuse += waypoints[i].f;
         }
 
@@ -233,47 +271,58 @@ void HingyTrack::ConstructHinges(float skip)
         i++;
     }
 
-    for (int i = 0; i < hinges.size(); i++) {
+    for (int i = 0; i < hinges.size(); i++)
+    {
         auto in = (i + 1) % hinges.size();
 
-        Hinge& me = hinges[i];
-        const Hinge& next = hinges[in];
+        Hinge &me = hinges[i];
+        const Hinge &next = hinges[in];
 
-        me.true_heading.h = std::atan2(next.ToWaypoint().y - me.ToWaypoint().y,
-            next.x - me.x);
+        me.true_heading.h =
+            std::atan2(next.ToWaypoint().y - me.ToWaypoint().y, next.x - me.x);
     }
 }
 
-void HingyTrack::SimulateHinges(float straightening_factor, float pulling_factor)
+void HingyTrack::SimulateHinges(float straightening_factor,
+                                float pulling_factor)
 {
     auto forces = std::vector<Vector2D>(hinges.size());
 
-    for (int i = 0; i < hinges.size(); i++) {
+    for (int i = 0; i < hinges.size(); i++)
+    {
         auto force = Vector2D(0.0f, 0.0f);
         auto ip = (i - 1 + hinges.size()) % hinges.size();
         auto in = (i + 1) % hinges.size();
 
-        const Hinge& prev = hinges[ip];
-        Hinge& me = hinges[i];
-        const Hinge& next = hinges[in];
+        const Hinge &prev = hinges[ip];
+        Hinge &me = hinges[i];
+        const Hinge &next = hinges[in];
 
-        auto angle_to_next = (Vector2D(next.x, next.y) - Vector2D(me.x, me.y)).ToDirection();
-        auto angle_from_prev = (Vector2D(me.x, me.y) - Vector2D(prev.x, prev.y)).ToDirection();
+        auto angle_to_next =
+            (Vector2D(next.x, next.y) - Vector2D(me.x, me.y)).ToDirection();
+        auto angle_from_prev =
+            (Vector2D(me.x, me.y) - Vector2D(prev.x, prev.y)).ToDirection();
         auto angle_diff = angle_to_next - angle_from_prev;
         auto angle_diff2 = (angle_to_next - angle_from_prev.Inv());
         auto perpendicular_angle = angle_from_prev.Inv() + angle_diff2 / 2.0f;
-        auto direction = std::abs((Vector2D(next.x, next.y) -
-            Vector2D(prev.x, prev.y)).ToDirection().h);
+        auto direction =
+            std::abs((Vector2D(next.x, next.y) - Vector2D(prev.x, prev.y))
+                         .ToDirection()
+                         .h);
 
-        auto dist_to_prev = (Vector2D(prev.x, prev.y) - Vector2D(me.x, me.y)).Length();
-        auto dist_to_next = (Vector2D(next.x, next.y) - Vector2D(me.x, me.y)).Length();
+        auto dist_to_prev =
+            (Vector2D(prev.x, prev.y) - Vector2D(me.x, me.y)).Length();
+        auto dist_to_next =
+            (Vector2D(next.x, next.y) - Vector2D(me.x, me.y)).Length();
 
-        forces[i] += Vector2D(straightening_factor * 2.0f, 0.0f) * (perpendicular_angle)*
-            std::abs(std::pow(angle_diff, 2.0f));
-        forces[ip] += Vector2D(straightening_factor, 0.0f) * (perpendicular_angle.Inv()) *
-            std::abs(std::pow(angle_diff, 2.0f));
-        forces[in] += Vector2D(straightening_factor, 0.0f) * (perpendicular_angle.Inv()) *
-            std::abs(std::pow(angle_diff, 2.0f));
+        forces[i] += Vector2D(straightening_factor * 2.0f, 0.0f) *
+                     (perpendicular_angle)*std::abs(std::pow(angle_diff, 2.0f));
+        forces[ip] += Vector2D(straightening_factor, 0.0f) *
+                      (perpendicular_angle.Inv()) *
+                      std::abs(std::pow(angle_diff, 2.0f));
+        forces[in] += Vector2D(straightening_factor, 0.0f) *
+                      (perpendicular_angle.Inv()) *
+                      std::abs(std::pow(angle_diff, 2.0f));
 
         me.curve = std::abs(angle_diff);
 
@@ -285,9 +334,11 @@ void HingyTrack::SimulateHinges(float straightening_factor, float pulling_factor
     }
 
     hinges.begin()->x = (hinges.begin()->lx + hinges.begin()->hx) / 2.0f;
-    (hinges.end() - 1)->x = ((hinges.end() - 1)->lx + (hinges.end() - 1)->hx) / 2.0f;
+    (hinges.end() - 1)->x =
+        ((hinges.end() - 1)->lx + (hinges.end() - 1)->hx) / 2.0f;
 
-    for (int i = 0; i < hinges.size(); i++) {
+    for (int i = 0; i < hinges.size(); i++)
+    {
         hinges[i].x += forces[i].x;
         hinges[i].y += forces[i].y;
         hinges[i].ClapToAxis();
@@ -300,17 +351,17 @@ std::pair<float, float> HingyTrack::GetHingePosAndHeading(float forward)
         return std::pair<float, float>(0.0f, 0.0f);
 
     if (last_forward < fshift)
-	return std::pair<float, float>(0.0f, 0.0f);
+        return std::pair<float, float>(0.0f, 0.0f);
 
     auto current_hinge = this->GetCurrentHinge(forward - fshift);
 
-    const auto& hp = hinges[current_hinge % hinges.size()];
-    const auto& hn = hinges[(current_hinge + 1) % hinges.size()];
-    const auto& hnn = hinges[(current_hinge + 2) % hinges.size()];
+    const auto &hp = hinges[current_hinge % hinges.size()];
+    const auto &hn = hinges[(current_hinge + 1) % hinges.size()];
+    const auto &hnn = hinges[(current_hinge + 2) % hinges.size()];
 
     float op = ((hp.x - hp.lx) / (hp.hx - hp.lx) - 0.5f) * 2.0f;
     float on = ((hn.x - hn.lx) / (hn.hx - hn.lx) - 0.5f) * 2.0f;
-    //float on = ((hnn.x - hnn.lx) / (hnn.hx - hnn.lx) - 0.5f) * 2.0f;
+    // float on = ((hnn.x - hnn.lx) / (hnn.hx - hnn.lx) - 0.5f) * 2.0f;
 
     if (!hp.direction)
         op *= -1;
@@ -318,15 +369,17 @@ std::pair<float, float> HingyTrack::GetHingePosAndHeading(float forward)
         on *= -1;
 
     float out_pos = op * (1.0f - interhinge_pos) + on * interhinge_pos;
-    //float out_h = std::atan(hp.a * (1.0f - p) + hn.a * p);
+    // float out_h = std::atan(hp.a * (1.0f - p) + hn.a * p);
 
-    auto hinge_dir1 = Vector2D(hn.x - hp.x, hn.ToWaypoint().y - hp.ToWaypoint().y).
-        ToDirection();
+    auto hinge_dir1 =
+        Vector2D(hn.x - hp.x, hn.ToWaypoint().y - hp.ToWaypoint().y)
+            .ToDirection();
 
     float out_h1 = hinge_dir1 - hn.true_heading;
 
-    auto hinge_dir2 = Vector2D(hnn.x - hn.x, hnn.ToWaypoint().y - hn.ToWaypoint().y).
-        ToDirection();
+    auto hinge_dir2 =
+        Vector2D(hnn.x - hn.x, hnn.ToWaypoint().y - hn.ToWaypoint().y)
+            .ToDirection();
 
     float out_h2 = hinge_dir2 - (hnn.true_heading);
 
@@ -341,15 +394,12 @@ float HingyTrack::GetHingeSpeed()
         return 0.1f;
 
     if (last_forward < fshift)
-	return 1.0f;
+        return 1.0f;
 
     return hinges[current_hinge].desired_speed;
 }
 
-bool HingyTrack::Recording()
-{
-    return recording;
-}
+bool HingyTrack::Recording() { return recording; }
 
 void HingyTrack::ConstructSpeeds(float s, float p, float c)
 {
@@ -359,8 +409,9 @@ void HingyTrack::ConstructSpeeds(float s, float p, float c)
     if (hinges.size() == 0)
         return;
 
-    FILE * f = fopen("energy_dump.txt", "w");
-    for (auto i = hinges.rbegin(); i != hinges.rend(); i++) {
+    FILE *f = fopen("energy_dump.txt", "w");
+    for (auto i = hinges.rbegin(); i != hinges.rend(); i++)
+    {
         energy -= (s * std::pow(i->curve, 2.0f) + p) * i->curve - c;
 
         if (energy > 1.0f)
@@ -373,7 +424,7 @@ void HingyTrack::ConstructSpeeds(float s, float p, float c)
 
         i->desired_speed = energy;
         counter -= 1;
-	fprintf(f, "%f %f %f\n", i->forward, energy, std::abs(i->curve)); 
+        fprintf(f, "%f %f %f\n", i->forward, energy, std::abs(i->curve));
     }
 
     fclose(f);
@@ -390,14 +441,10 @@ int HingyTrack::GetCurrentHinge(float fwd)
 
 // === GUI ===
 
+HingyTrackGui::~HingyTrackGui() { KillGui(); }
 
-HingyTrackGui::~HingyTrackGui()
-{
-    KillGui();
-}
-
-HingyTrackGui::HingyTrackGui(string filename, int resx, int resy) :
-    HingyTrack(filename), rx(resx), ry(resy)
+HingyTrackGui::HingyTrackGui(string filename, int resx, int resy)
+    : HingyTrack(filename), rx(resx), ry(resy)
 {
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -406,7 +453,8 @@ HingyTrackGui::HingyTrackGui(string filename, int resx, int resy) :
     SDL_ShowWindow(win);
 }
 
-void HingyTrackGui::MarkWaypoint(float forward, float l, float r, float angle, float speed)
+void HingyTrackGui::MarkWaypoint(float forward, float l, float r, float angle,
+                                 float speed)
 {
     TickGraphics();
     HingyTrack::MarkWaypoint(forward, l, r, angle, speed);
@@ -421,7 +469,8 @@ void HingyTrackGui::DrawTrack()
 
     int i = 0;
 
-    for (const auto& waypoint : waypoints) {
+    for (const auto &waypoint : waypoints)
+    {
 
         float nx = lx + std::cos(heading) * forward_factor * waypoint.f;
         float ny = ly + std::sin(heading) * forward_factor * waypoint.f;
@@ -429,7 +478,8 @@ void HingyTrackGui::DrawTrack()
         if (i++ % GUI_SKIP == 0)
             SDL_RenderDrawLine(renderer, lx, ly, nx, ny);
 
-        lx = nx; ly = ny;
+        lx = nx;
+        ly = ny;
         heading += waypoint.a * angle_factor;
     }
 }
@@ -442,21 +492,20 @@ void HingyTrackGui::DrawBounds()
     if (bounds.size() == 0)
         return;
 
-    auto& last_bound = bounds[0];
+    auto &last_bound = bounds[0];
 
-    for (const auto& bound : bounds) {
+    for (const auto &bound : bounds)
+    {
         if (i++ % GUI_SKIP)
             continue;
 
-        SDL_RenderDrawLine(renderer,
-            bound.first.x + rx / 2, bound.first.y + ry / 2,
-            last_bound.first.x + rx / 2, last_bound.first.y + ry / 2
-        );
+        SDL_RenderDrawLine(renderer, bound.first.x + rx / 2,
+                           bound.first.y + ry / 2, last_bound.first.x + rx / 2,
+                           last_bound.first.y + ry / 2);
 
-        SDL_RenderDrawLine(renderer,
-            bound.second.x + rx / 2, bound.second.y + ry / 2,
-            last_bound.second.x + rx / 2, last_bound.second.y + ry / 2
-        );
+        SDL_RenderDrawLine(
+            renderer, bound.second.x + rx / 2, bound.second.y + ry / 2,
+            last_bound.second.x + rx / 2, last_bound.second.y + ry / 2);
 
         last_bound = bound;
     }
@@ -471,17 +520,17 @@ void HingyTrackGui::DrawHinges()
 
     auto last_hinge = hinges[hinges.size() - 1];
 
-    for (const auto& hinge : hinges) {
+    for (const auto &hinge : hinges)
+    {
         auto my_pos = hinge.ToWaypoint();
         auto last_pos = last_hinge.ToWaypoint();
 
-        SDL_SetRenderDrawColor(renderer, 0, hinge.desired_speed * 200.0f + 50.0f, 0, 255);
-        //SDL_SetRenderDrawColor(renderer, 0, 255.0f, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 0,
+                               hinge.desired_speed * 200.0f + 50.0f, 0, 255);
+        // SDL_SetRenderDrawColor(renderer, 0, 255.0f, 0, 255);
 
-        SDL_RenderDrawLine(renderer,
-            my_pos.x + rx / 2, my_pos.y + ry / 2,
-            last_pos.x + rx / 2, last_pos.y + ry / 2
-        );
+        SDL_RenderDrawLine(renderer, my_pos.x + rx / 2, my_pos.y + ry / 2,
+                           last_pos.x + rx / 2, last_pos.y + ry / 2);
 
         last_hinge = hinge;
     }
@@ -489,11 +538,10 @@ void HingyTrackGui::DrawHinges()
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     SDL_RenderDrawLine(renderer,
-        hinges[current_hinge % hinges.size()].x + rx / 2,
-        hinges[current_hinge % hinges.size()].y + ry / 2,
-        hinges[(current_hinge + 1) % hinges.size()].x + rx / 2,
-        hinges[(current_hinge + 1) % hinges.size()].y + ry / 2
-    );
+                       hinges[current_hinge % hinges.size()].x + rx / 2,
+                       hinges[current_hinge % hinges.size()].y + ry / 2,
+                       hinges[(current_hinge + 1) % hinges.size()].x + rx / 2,
+                       hinges[(current_hinge + 1) % hinges.size()].y + ry / 2);
 }
 
 void HingyTrackGui::DrawMiddle()
@@ -513,13 +561,16 @@ void HingyTrackGui::TickGraphics(bool clear)
         return;
 
     SDL_Event e;
-    if (SDL_PollEvent(&e)) {
-        if (e.type == SDL_QUIT) {
+    if (SDL_PollEvent(&e))
+    {
+        if (e.type == SDL_QUIT)
+        {
             killsdl = true;
         }
     }
 
-    if (clear) {
+    if (clear)
+    {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
     }
@@ -527,15 +578,17 @@ void HingyTrackGui::TickGraphics(bool clear)
     DrawMiddle();
     if (recording)
         DrawTrack();
-    //DrawBounds();
+    // DrawBounds();
 
     DrawHinges();
 
-    if (!killsdl) {
+    if (!killsdl)
+    {
         SDL_RenderCopy(renderer, bitmapTex, NULL, NULL);
         SDL_RenderPresent(renderer);
     }
-    else {
+    else
+    {
         KillGui();
     }
 }
@@ -554,10 +607,7 @@ void HingyTrackGui::KillGui()
     StopRecording();
 }
 
-Vector2D HingyTrack::Hinge::ToWaypoint() const
-{
-    return Vector2D{ x, y };
-}
+Vector2D HingyTrack::Hinge::ToWaypoint() const { return Vector2D{x, y}; }
 
 void HingyTrack::Hinge::ClapToAxis()
 {

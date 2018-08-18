@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <map>
+#include <string>
 
 typedef std::map<std::string, std::string> stringmap;
 

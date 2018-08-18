@@ -2,25 +2,26 @@
 
 #include <memory>
 
-#include "main.h"
 #include "car_io.h"
 #include "hingy_track.h"
+#include "main.h"
 #include "pid_controller.h"
 
-template<int, typename>
-class GeneRegulatoryNetwork;
+template <int, typename> class GeneRegulatoryNetwork;
 
-class Driver {
-public:
-    Driver(stringmap params) {};
-    virtual ~Driver() {};
+class Driver
+{
+  public:
+    Driver(stringmap params){};
+    virtual ~Driver(){};
 
-    virtual void Cycle(CarSteers& steers, const CarState& state) = 0;
+    virtual void Cycle(CarSteers &steers, const CarState &state) = 0;
     virtual stringmap GetSimulatorInitParameters() = 0;
 };
 
-class HingyDriver : public Driver {
-private:
+class HingyDriver : public Driver
+{
+  private:
     std::shared_ptr<HingyTrack> track;
     float last_timestamp = 0.0f, speed_factor, speed_base;
     float last_dt = 0.0f, last_rpm = 0.0f;
@@ -37,16 +38,16 @@ private:
 
     std::unique_ptr<GeneRegulatoryNetwork<2, float>> fusion_grn;
 
-    void SetClutchAndGear(const CarState& state, CarSteers& steers);
-    void SetReverseGear(const CarState& state, CarSteers& steers);
-    void StuckOverride(CarSteers& steers, const CarState& state, float dt);
-    
-    float GetTargetSpeed(const CarState& state);
+    void SetClutchAndGear(const CarState &state, CarSteers &steers);
+    void SetReverseGear(const CarState &state, CarSteers &steers);
+    void StuckOverride(CarSteers &steers, const CarState &state, float dt);
 
-public:
+    float GetTargetSpeed(const CarState &state);
+
+  public:
     HingyDriver(stringmap params);
     virtual ~HingyDriver();
 
-    virtual void Cycle(CarSteers& steers, const CarState& state);
+    virtual void Cycle(CarSteers &steers, const CarState &state);
     virtual stringmap GetSimulatorInitParameters();
 };
