@@ -1,0 +1,10 @@
+<hingybot_params>
+	<sa>21.924664</sa>
+	<sb>0.010047</sb>
+	<sc>0.075005</sc>
+	<speed_base>118.170815</speed_base>
+	<speed_factor>152.919479</speed_factor>
+	<master_output_factor>1.000036</master_output_factor>
+	<steering_factor>1.007024</steering_factor>
+</hingybot_params>
+

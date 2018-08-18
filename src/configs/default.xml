@@ -1,0 +1,10 @@
+<hingybot_params>
+	<sa>18.0</sa>
+	<sb>0.01</sb>
+	<sc>0.07</sc>
+	<speed_base>110.0f</speed_base>
+	<speed_factor>160.0f</speed_factor>
+<!--	<force1>1.0</force1>
+	<force2>0.01</force2> -->
+	<fshift>38.0</fshift>
+</hingybot_params>
