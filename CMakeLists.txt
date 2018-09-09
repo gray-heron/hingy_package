@@ -2,7 +2,8 @@ cmake_minimum_required (VERSION 2.6)
 project (hingybot)
 enable_testing()
 
-set (CMAKE_CXX_STANDARD 17)
+set (CMAKE_CXX_STANDARD 14)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 set (VERSION_MAJOR 1)
 set (VERSION_MINOR 0)
@@ -12,8 +13,10 @@ set(LIBRARY_OUTPUT_PATH "out/lib/")
 
 INCLUDE(FindPkgConfig)
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+find_package(Boost COMPONENTS unit_test_framework system REQUIRED)
 find_package(SDL2 COMPONENTS SDL2GFX SDL2NET SDL2IMAGE REQUIRED)
+
+find_package(Threads REQUIRED)
 
 include_directories("${PROJECT_BINARY_DIR}" "src/")
 
@@ -26,7 +29,15 @@ set(SRCS ${SRCS_NOMAIN} src/main.cpp)
 add_executable(hingybot ${SRCS})
 
 INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS} ${SDL2NET_INCLUDE_DIRS} ${SDL2GFX_INCLUDE_DIRS})
-TARGET_LINK_LIBRARIES(hingybot ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} ${SDL2NET_LIBRARIES} ${SDL2GFX_LIBRARIES})
+
+TARGET_LINK_LIBRARIES(
+  hingybot
+  ${SDL2_LIBRARIES}
+  ${SDL2IMAGE_LIBRARIES}
+  ${SDL2GFX_LIBRARIES}
+  ${BOOST_LIBRARIES}
+  Threads::Threads
+  Boost::system)
 
 include_directories (${Boost_INCLUDE_DIRS})
 

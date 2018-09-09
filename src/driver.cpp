@@ -1,6 +1,5 @@
 #include <fstream>
 
-#include "GeneRegulatoryNetwork.h"
 #include "driver.h"
 
 using std::string;
@@ -24,34 +23,6 @@ HingyDriver::HingyDriver(stringmap params) : Driver(params)
 
     speed_factor = std::stof(params["speed_factor"]);
     speed_base = std::stof(params["speed_base"]);
-
-    if (params.find("grn") != params.end())
-    {
-        size_t grn_filesize = file_size(params["grn"]);
-
-        if (grn_filesize != -1)
-        {
-            fstream infile(params["grn"], ios::in | ios::binary);
-
-            assert(infile.is_open());
-
-            std::vector<uint8_t> data_vector;
-            data_vector.resize(grn_filesize);
-            infile.read((char *)data_vector.data(), grn_filesize);
-            infile.close();
-
-            grn_inputs.resize(13);
-
-            fusion_grn = std::unique_ptr<GeneRegulatoryNetwork<2, float>>(
-                new GeneRegulatoryNetwork<2, float>());
-            fusion_grn->Deserialize(data_vector);
-            fusion_grn->Reset();
-        }
-        else
-        {
-            log_warning("Couldn't open the GRN file!");
-        }
-    }
 
     int hinges_iterations = atoi(params["hinges_iterations"].c_str());
 
@@ -223,22 +194,7 @@ float HingyDriver::GetTargetSpeed(const CarState &state)
     else
         agent_speed = 1000.0f;
 
-    if (fusion_grn)
-    {
-        grn_inputs[0] = 1.0f;
-        grn_inputs[1] = state.speed_x / 300.0f;
-        grn_inputs[2] = std::max(0.0f, state.cross_position);
-        grn_inputs[3] = std::max(0.0f, -state.cross_position);
-        for (int i = 0; i < 9; i++)
-            grn_inputs[4 + i] = state.sensors[i * 2 + 1];
-
-        auto outputs = fusion_grn->Step(grn_inputs);
-        return (outputs[0] - outputs[1]) / (outputs[0] + outputs[1]) * 300.0f;
-    }
-    else
-    {
-        return agent_speed;
-    }
+    return agent_speed;
 }
 
 void HingyDriver::StuckOverride(CarSteers &steers, const CarState &state,

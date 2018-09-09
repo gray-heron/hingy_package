@@ -16,14 +16,14 @@ const std::vector<string> launch_arguments = {"host", "port",  "stage",
                                               "gui",  "track", "params"};
 
 const std::vector<std::pair<string, string>> default_params = {
-    {"params", "configs/best.xml"},
     {"track", "tmp_track.xml"},
     {"gui", "0"},
     {"stage", "1"},
     {"force1", "0"},
     {"force2", "0"},
     {"hinges_iterations", "60000"},
-    {"paranoid", "0"}};
+    {"paranoid", "0"},
+    {"host", "127.0.0.1"}};
 
 bool crash_on_warning;
 
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
     while (true)
     {
         driver->Cycle(car_steers, car_state);
-        integration->Cycle(car_steers, car_state);
+        auto car_state = integration->Cycle(car_steers);
 
         auto time = std::chrono::high_resolution_clock::now();
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(

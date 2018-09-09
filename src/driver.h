@@ -7,8 +7,6 @@
 #include "main.h"
 #include "pid_controller.h"
 
-template <int, typename> class GeneRegulatoryNetwork;
-
 class Driver
 {
   public:
@@ -35,8 +33,6 @@ class HingyDriver : public Driver
     PidController cross_position_control;
     PidController angle_control;
     PidController speed_control;
-
-    std::unique_ptr<GeneRegulatoryNetwork<2, float>> fusion_grn;
 
     void SetClutchAndGear(const CarState &state, CarSteers &steers);
     void SetReverseGear(const CarState &state, CarSteers &steers);
